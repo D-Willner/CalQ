@@ -7,7 +7,7 @@ Recipe::Recipe(std::string nm, const std::vector<Food>& ing) : recipe_name(nm), 
 Recipe::Recipe(std::string nm, const std::initializer_list<Food>& ing) : recipe_name(nm), ingredients(ing) {}
 
 
-const std::vector<Food> Recipe::get_ingredients() { return ingredients; }
+const std::vector<Food> Recipe::get_ingredients() const { return ingredients; }
 
 /*
 Recipe Recipe::operator* (int percentage) const

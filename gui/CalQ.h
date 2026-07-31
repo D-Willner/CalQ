@@ -15,6 +15,8 @@ class CalQ : public QWidget
     Q_OBJECT
 
 private:
+    constexpr static int DATABASETAB_IND = 1;
+
     MainTab* main_tab;
     DataBaseTab* database_tab;
     HistoryTab* history_tab;

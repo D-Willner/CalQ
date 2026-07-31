@@ -470,7 +470,7 @@ std::vector<T> DataBase::Tvec_name_contains(std::string s, const std::map<std::s
 {
     std::string l = lower(s);
     std::vector<T> ret;
-    for (auto& val : m) {
+    for (const auto& val : m) {
         std::string n = lower(val.first);
         if (n.find(l) != std::string::npos) ret.push_back(val.second);
     }

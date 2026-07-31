@@ -9,7 +9,7 @@ CalQ::CalQ(DataBase& db, QWidget *parent)
 
     tabs = new QTabWidget(this);
     main_tab = new MainTab(database);
-    database_tab = new DataBaseTab();
+    database_tab = new DataBaseTab(database);
     history_tab = new HistoryTab();
     settings_tab = new SettingsTab();
     
@@ -24,6 +24,8 @@ CalQ::CalQ(DataBase& db, QWidget *parent)
     layout->addWidget(tabs);
     setLayout(layout);
 
+    QObject::connect(tabs, &QTabWidget::currentChanged,
+        this, [=](int index) { if (index == DATABASETAB_IND) database_tab->update_tables(); });
 }
 
 CalQ::~CalQ()

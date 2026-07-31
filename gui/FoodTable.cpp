@@ -9,11 +9,11 @@ FoodTable::FoodTable(int rows, FTTYPE type, QWidget* parent) : QTableWidget(pare
 
     if (type == NO_FACTOR) {
         setHorizontalHeaderLabels({ "Name", "Amount", "Cals", "Prot", "Carbs", "Fats", "" });
-        setMinimumWidth(475);   //  magic number that just works
+        setFixedWidth(475);   //  magic number that just works
     }
     else if (type == FACTOR) {
         setHorizontalHeaderLabels({ "Name", "Amount", "Cals", "Prot", "Carbs", "Fats", "Factor", "" });
-        setMinimumWidth(535);
+        setFixedWidth(535);
     }
     
     this->setColumnWidth(1, 60);
@@ -23,6 +23,7 @@ FoodTable::FoodTable(int rows, FTTYPE type, QWidget* parent) : QTableWidget(pare
     this->setColumnWidth(5, 60);
     this->setColumnWidth(6, 60);
     if (type == FACTOR) this->setColumnWidth(7, 60);
+
 
     this->horizontalHeader()->setSectionResizeMode(QHeaderView::Fixed);
     this->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
@@ -34,6 +35,9 @@ FoodTable::FoodTable(int rows, FTTYPE type, QWidget* parent) : QTableWidget(pare
     for (int i = 0; i < rows; i++) add_row();
 
     QObject::connect(this, &FoodTable::itemDoubleClicked, this, &FoodTable::process_double_click);
+
+    setFixedHeight(rowHeight(0)*(rows+1));
+    set_min_rows(rows);
 }
 
 void FoodTable::set_editable(bool can_edit)
@@ -47,6 +51,8 @@ void FoodTable::set_editable(bool can_edit)
         this->setSelectionMode(QAbstractItemView::NoSelection);
     }
 }
+
+void FoodTable::set_name_editable(bool can_edit) { name_editable = can_edit; }
 
 bool FoodTable::set_factor(double factor, int row)
 {
@@ -71,6 +77,10 @@ bool FoodTable::set_food_no_amount(const Food& f, int row)
     if (this->rowCount() <= row) return false;
 
     setItem(row, 0, new QTableWidgetItem(QString::fromStdString(f.name())));
+    if (!name_editable) {
+        auto name_item = item(row, 0);
+        if (name_item) name_item->setFlags(name_item->flags() & ~Qt::ItemIsEditable);
+    }
 
     setItem(row, 2, new QTableWidgetItem(QString::number(f.calories())));
     setItem(row, 3, new QTableWidgetItem(QString::number(f.protein())));
@@ -104,6 +114,13 @@ void FoodTable::add_food(const Food& f)
 
     this->add_row();
     set_food(f, rowCount() - 1);
+}
+
+void FoodTable::add_recipe(const Recipe& r)
+{
+    for (const Food& f : r.get_ingredients()) {
+        add_food(f);
+    }
 }
 
 void FoodTable::add_meal(const Meal& m)
@@ -158,10 +175,6 @@ bool FoodTable::has_food(int row)
     WEIGHT_T fats = cur == nullptr ? 0 : cur->text().toDouble(&ret);
     ok &= ret;
 
-    cur = this->item(row, 6);
-    double factor = cur == nullptr ? 0 : cur->text().toDouble(&ret);
-    ok &= ret;
-
     return ok;
 }
 
@@ -193,10 +206,6 @@ Food FoodTable::read_food(int row)
     WEIGHT_T fats = cur == nullptr ? 0 : cur->data(Qt::EditRole).toDouble(&ret);
     ok &= ret;
 
-    cur = this->item(row, 6);
-    double factor = cur == nullptr ? 0 : cur->data(Qt::EditRole).toDouble(&ret);
-    ok &= ret;
-
     if (!ok) {
         throw new std::exception("Could not convert table data into food data");
     }
@@ -206,13 +215,24 @@ Food FoodTable::read_food(int row)
     return Food(ft, amount);
 }
 
+std::vector<Food> FoodTable::read_ingredients()
+{
+    std::vector<Food> ing;
+    for (int row = 0; row < rowCount(); row++) {
+        if (has_food(row)) ing.push_back(read_food(row));
+    }
+
+    return ing;
+}
+
 void FoodTable::insert_row(int row)
 {
     QPushButton* btn = new QPushButton("-");
     insertRow(row);
     setCellWidget(row, columnCount()-1, btn);
 
-    QObject::connect(btn, &QPushButton::clicked, this, [=]() {this->clear_remove_row(currentRow());});
+    QObject::connect(btn, &QPushButton::clicked, 
+        this, [=]() {clear_remove_emit_row(currentRow());});
 }
 
 void FoodTable::add_row()
@@ -251,16 +271,22 @@ int FoodTable::get_min_rows() { return min_rows; }
 
 void FoodTable::clear_remove_row(int row)
 {
-    if (has_food(row)) {
-        Food f = read_food(row);
-        emit food_removed(f);
-    }
-
     if (rowCount() > min_rows) removeRow(row);
     else {
         clear_row(row);
         moveRowsUp(row);
     }
+}
+
+void FoodTable::clear_remove_emit_row(int row)
+{
+    if (has_food(row)) {
+        if (has_food(row)) {
+            Food f = read_food(row);
+            emit food_removed(f);
+        }
+    }
+    clear_remove_row(row);
 }
 
 

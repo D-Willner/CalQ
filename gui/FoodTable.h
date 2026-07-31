@@ -12,6 +12,8 @@ private:
 
     int min_rows = 1;
 
+    bool name_editable = true;
+
 
 public:
     enum FTTYPE{NO_FACTOR, FACTOR};
@@ -19,6 +21,7 @@ public:
     explicit FoodTable(int rows, FTTYPE = NO_FACTOR, QWidget* parent = nullptr);
 
     void set_editable(bool can_edit);
+    void set_name_editable(bool can_edit);
 
     bool set_factor(double factor, int row);
 
@@ -29,6 +32,8 @@ public:
     bool has_food(int row);
 
     Food read_food(int row);
+
+    std::vector<Food> read_ingredients();
 
     bool has_factor(int row);
 
@@ -45,12 +50,15 @@ public:
     int get_min_rows();
 
     void clear_remove_row(int row);
+    void clear_remove_emit_row(int row);
 
     void moveRowsUp(int r = 0);
 
     //  void removeRow(int) from parent
 
 public slots:
+
+    void add_recipe(const Recipe& r);
 
     void add_meal(const Meal& m);
 

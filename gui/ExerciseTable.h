@@ -8,8 +8,12 @@ class ExerciseTable :
     Q_OBJECT
 
 private:
-    bool row_is_free(int row);
+
     int minRows=1;
+
+    bool name_editable = true;
+
+    bool row_is_free(int row);
 
     bool rowIsEmpty(int row);
 
@@ -17,6 +21,7 @@ public:
     explicit ExerciseTable(int rows, QWidget* parent = nullptr);
 
     void setEditable(bool canEdit);
+    void set_name_editable(bool can_edit);
 
     bool setExercise(const Exercise& e, int row);
     bool setExerciseNoDuration(const Exercise& e, int row);
@@ -32,13 +37,14 @@ public:
 
     void clearRow(int row);
     void removeRow(int row);
-    void clearRemoveRow(int row);
+    void clear_remove_row(int row);
+    void clear_remove_emit_row(int row);
     void moveRowsUp(int startRow = 0);
 
 public slots:
     void addExercise(const Exercise& e);
     //void removeExercise(const Exercise& e); 
-    void clearTable();
+    void clear_table();
 
 signals:
     void exerciseRemoved(const Exercise& e);

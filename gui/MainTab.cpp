@@ -23,7 +23,7 @@ MainTab::MainTab(DataBase& db, QWidget* parent) : QWidget(parent), database(db),
 
     food_table->set_editable(false);
     food_table->set_min_rows(5);
-    food_table->setFixedHeight(food_table->rowHeight(0) * 6);
+    //food_table->setFixedHeight(food_table->rowHeight(0) * 6);
 
     add_food_btn = new QPushButton("Add food");
     add_recipe_btn = new QPushButton("Add recipe");
@@ -35,16 +35,12 @@ MainTab::MainTab(DataBase& db, QWidget* parent) : QWidget(parent), database(db),
 
     add_table = new FoodTable(5, FoodTable::FACTOR);
     add_table->set_editable(true);
-    add_table->setMinimumHeight(add_table->rowHeight(0) * 6);
-    add_table->setMaximumHeight(add_table->rowHeight(0) * 6);
     add_table->set_min_rows(5);
     
     exerciseTable = new ExerciseTable(5);
-    exerciseTable->setFixedHeight(exerciseTable->rowHeight(0) * 6);
     exerciseTable->setMinimumRows(5);
 
     add_exercise_table = new ExerciseTable(1);
-    add_exercise_table->setFixedHeight(add_exercise_table->rowHeight(0) * 2);
     add_exercise_table->setEditable(true);
     add_exercise_table->setMinimumRows(1);
 
@@ -184,7 +180,7 @@ void MainTab::add_exercise_today()
     database.add(ex.exercise_type());
     calorie_display->add_exercised_calories(ex.calories());
 
-    add_exercise_table->clearTable();
+    add_exercise_table->clear_table();
 }
 
 void MainTab::remove_exercise_today(const Exercise& ex)
@@ -265,6 +261,7 @@ void MainTab::add_food_today()
             if (add_table->has_factor(i)) {
                 factor = add_table->read_factor(i);
             }
+            f *= factor;
 
             if (rem - factor > MEAL_MIN_PERCENTAGE) {
                 m.set_percentage_left(rem - factor);
@@ -336,7 +333,7 @@ void MainTab::expand_recipe(const Food& f, int row)
 
     Recipe r = database.get_recipe(f.name());
     recipe_name_line->setText(QString::fromStdString(r.name()));
-    add_table->clear_remove_row(0);
+    add_table->clear_remove_emit_row(0);
     for (auto& f : r.get_ingredients()) {
         add_table->insert_food(f, 0);
     }

@@ -19,7 +19,7 @@ public:
     explicit Recipe(std::string nm, const std::vector<Food>& ing);
     explicit Recipe(std::string nm, const std::initializer_list<Food>& ing);
 
-    const std::vector<Food> get_ingredients();
+    const std::vector<Food> get_ingredients() const;
 
     //Recipe operator* (int percentage) const;
     Recipe& operator*= (int percentage);
