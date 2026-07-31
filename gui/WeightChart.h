@@ -4,7 +4,7 @@
 #include <qdatetimeaxis.h>
 #include <QValueAxis>
 
-#include "DataBase.h"
+#include "database/DataBase.h"
 
 
 class WeightChart :

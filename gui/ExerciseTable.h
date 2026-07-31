@@ -1,6 +1,6 @@
 #pragma once
 #include "C:\Qt\6.11.1\msvc2022_64\include\QtWidgets\qtablewidget.h"
-#include "Exercise.h"
+#include "database/Exercise.h"
 
 class ExerciseTable :
     public QTableWidget

@@ -1,7 +1,7 @@
 #pragma once
 #include <QLineEdit>
 #include <QListWidget>
-#include "DataBase.h"
+#include "database/DataBase.h"
 #include "SearchInput.h"
 
 class SearchLine : public QObject

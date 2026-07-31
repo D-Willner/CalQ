@@ -3,7 +3,7 @@
 #include <QBarSeries>
 #include <QBarSet>
 #include <QValueAxis>
-#include "Food.h"
+#include "database/Food.h"
 
 class MacroChart :
     public QChartView

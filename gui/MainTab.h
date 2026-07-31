@@ -17,14 +17,14 @@
 #include <QListWidget>
 #include <QDoubleSpinBox>
 
-#include "DataBase.h"
+#include "database/DataBase.h"
 #include "FoodTable.h"
 #include "SearchLine.h"
 #include "CalorieDisplay.h"
 #include "MacroChart.h"
 #include "ExerciseTable.h"
 #include "SearchField.h"
-#include "DataBaseSearcher.h"
+#include "database/DataBaseSearcher.h"
 #include "WeightChart.h"
 
 class MainTab :

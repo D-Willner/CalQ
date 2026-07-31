@@ -1,7 +1,7 @@
 
 #define QT_NO_DEPRECATED_WARNINGS
-#include "CalQ.h"
-#include "DataBase.h"
+#include "gui/CalQ.h"
+#include "database/DataBase.h"
 #include <QtWidgets/QApplication>
 #include <iostream>
 #include <QMessageBox>

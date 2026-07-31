@@ -5,7 +5,7 @@
 #include <QPushButton>
 
 #include "MainTab.h"
-#include "DataBase.h"
+#include "database/DataBase.h"
 #include "DataBaseTab.h"
 #include "HistoryTab.h"
 #include "SettingsTab.h"
