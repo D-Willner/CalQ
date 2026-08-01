@@ -5,6 +5,11 @@ Food::Food(const FoodType& t, WEIGHT_T w) : type(t), weight(w) {};
 Food::Food(const FoodType& t) : type(t), weight(t.get_size()) {};
 Food::Food() {};
 
+
+Food::Food(std::string name, CAL_T cals,
+	WEIGHT_T prot, WEIGHT_T carbs, WEIGHT_T fats, WEIGHT_T w)
+	: Food(FoodType(name, cals*100/w, prot*100/w, carbs*100/w, fats*100/w), w) {}
+
 std::string Food::name() const { return type.name(); }
 
 FoodType Food::food_type() const

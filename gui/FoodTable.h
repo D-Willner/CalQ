@@ -8,17 +8,26 @@ class FoodTable :
 {
     Q_OBJECT
 private:
-    bool row_is_free(int row);
-
     int min_rows = 1;
 
     bool name_editable = true;
 
+    bool amount_adjust = false;
+
+    bool row_is_free(int row);
+
+    std::vector<WEIGHT_T> prev_weights;
+
+public slots:
+    bool adjust_row(int row);   //  after a weight change in the row
 
 public:
     enum FTTYPE{NO_FACTOR, FACTOR};
 
     explicit FoodTable(int rows, FTTYPE = NO_FACTOR, QWidget* parent = nullptr);
+
+    void set_amount_adjust(bool does_adjust);
+    bool get_amount_adjust();
 
     void set_editable(bool can_edit);
     void set_name_editable(bool can_edit);
@@ -75,5 +84,7 @@ signals:
     void food_removed(const Food& f);
 
     void food_double_clicked(const Food& f, int row);
+
+    void adjusted(int row, std::string name);
 };
 

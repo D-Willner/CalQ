@@ -18,6 +18,10 @@ public:
 	explicit Food(const FoodType& t, WEIGHT_T w);
 	explicit Food(const FoodType& t);
 
+	//	w must not be 0
+	explicit Food(std::string name, CAL_T cals = 0, 
+		WEIGHT_T prot = 0, WEIGHT_T carbs = 0, WEIGHT_T fats = 0, WEIGHT_T w = 100);
+
 	std::string name() const;
 
 	FoodType food_type() const;

@@ -20,10 +20,7 @@ MainTab::MainTab(DataBase& db, QWidget* parent) : QWidget(parent), database(db),
     calorie_display->set_target_calories(1500); //  Make this a setting
 
     food_table = new FoodTable(5, FoodTable::NO_FACTOR);
-
     food_table->set_editable(false);
-    food_table->set_min_rows(5);
-    //food_table->setFixedHeight(food_table->rowHeight(0) * 6);
 
     add_food_btn = new QPushButton("Add food");
     add_recipe_btn = new QPushButton("Add recipe");
@@ -35,14 +32,13 @@ MainTab::MainTab(DataBase& db, QWidget* parent) : QWidget(parent), database(db),
 
     add_table = new FoodTable(5, FoodTable::FACTOR);
     add_table->set_editable(true);
-    add_table->set_min_rows(5);
     
     exerciseTable = new ExerciseTable(5);
     exerciseTable->setMinimumRows(5);
 
     add_exercise_table = new ExerciseTable(1);
     add_exercise_table->setEditable(true);
-    add_exercise_table->setMinimumRows(1);
+    //add_exercise_table->setMinimumRows(1);
 
     add_exercise_btn = new QPushButton("Add");
 
@@ -98,8 +94,8 @@ MainTab::MainTab(DataBase& db, QWidget* parent) : QWidget(parent), database(db),
     layout_left->addLayout(layout_exercise, 1);
 
     QHBoxLayout* layout_weight = new QHBoxLayout();
-    layout_weight->addWidget(weight_entry_editor,0,Qt::AlignTop);
-    layout_weight->addWidget(weight_btn, 0, Qt::AlignTop);
+    layout_weight->addWidget(weight_entry_editor,1,Qt::AlignTop  | Qt::AlignLeft);
+    layout_weight->addWidget(weight_btn, 0, Qt::AlignTop | Qt::AlignRight);
 
     layout_right->addWidget(calorie_display, 0, Qt::AlignTop);
     layout_right->addWidget(m_macroChart, 0, Qt::AlignTop | Qt::AlignLeft);

@@ -35,10 +35,51 @@ FoodTable::FoodTable(int rows, FTTYPE type, QWidget* parent) : QTableWidget(pare
     for (int i = 0; i < rows; i++) add_row();
 
     QObject::connect(this, &FoodTable::itemDoubleClicked, this, &FoodTable::process_double_click);
+    
+    ///*
+    QObject::connect(this, &QTableWidget::cellChanged,
+        this, [this](int r, int c) {
+            if (amount_adjust && c == 1) adjust_row(r);
+        }
+    );
+    //*/
 
     setFixedHeight(rowHeight(0)*(rows+1));
     set_min_rows(rows);
 }
+
+bool FoodTable::adjust_row(int row) 
+{
+    if (row < 0 || row >= prev_weights.size() || row >= rowCount()) return false;
+
+    WEIGHT_T prev = prev_weights[row];
+    auto itm = item(row, 1);
+    if (!itm) return false;
+
+    bool res;
+    WEIGHT_T cur = item(row, 1)->data(Qt::EditRole).toDouble(&res);
+    if (!res) return false;
+    prev_weights[row] = cur;
+
+    if (prev <= 0) return false;
+
+    if (!has_food(row)) return false;
+
+    double fac = cur / (double)prev;
+
+    Food f = read_food(row);
+    Food f_adj(f.name(), f.calories() * fac, f.protein() * fac, f.carbs() * fac, f.fats() * fac, cur);
+
+    return set_food_no_amount(f_adj, row);
+}
+
+
+void FoodTable::set_amount_adjust(bool does_adjust) 
+{
+    amount_adjust = does_adjust;
+}
+
+bool FoodTable::get_amount_adjust() { return amount_adjust; }
 
 void FoodTable::set_editable(bool can_edit)
 {
@@ -68,6 +109,7 @@ bool FoodTable::set_food(const Food& f, int row) {
     set_food_no_amount(f, row);
 
     setItem(row, 1, new QTableWidgetItem(QString::number(f.grams())));
+    prev_weights[row] = f.grams();
 
     return true;
 }
@@ -228,11 +270,16 @@ std::vector<Food> FoodTable::read_ingredients()
 void FoodTable::insert_row(int row)
 {
     QPushButton* btn = new QPushButton("-");
+    btn->setAutoDefault(false);
     insertRow(row);
     setCellWidget(row, columnCount()-1, btn);
 
-    QObject::connect(btn, &QPushButton::clicked, 
+    ///*
+    QObject::connect(btn, &QPushButton::clicked,
         this, [=]() {clear_remove_emit_row(currentRow());});
+    //*/
+
+    prev_weights.insert(prev_weights.begin() + row, 0);
 }
 
 void FoodTable::add_row()
@@ -271,7 +318,10 @@ int FoodTable::get_min_rows() { return min_rows; }
 
 void FoodTable::clear_remove_row(int row)
 {
-    if (rowCount() > min_rows) removeRow(row);
+    if (rowCount() > min_rows) {
+        removeRow(row);
+        prev_weights.erase(prev_weights.begin() + row);
+    }
     else {
         clear_row(row);
         moveRowsUp(row);

@@ -78,6 +78,16 @@ void DataBaseTab::handle_rec_change(int row, int col)
 	
 	Recipe r = database.get_recipe(name);
 	RecipeDialog* rd = new RecipeDialog(r,database,this);
+	QObject::connect(rd, &RecipeDialog::found,
+		this, [this](const Recipe& r) {
+			database.overwrite(r);
+			for (const Food& f : r.get_ingredients()) {
+				database.add(f.food_type());
+			}
+			recipe_table->clear_table();
+			load_recipes();	//	somewhat inefficient
+		}
+	);
 	rd->show();
 }
 

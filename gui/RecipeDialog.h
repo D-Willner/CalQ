@@ -5,6 +5,8 @@
 #include "FoodTable.h"
 #include <QLineEdit>
 #include <QPushButton>
+#include "database/DataBaseSearcher.h"
+#include "SearchField.h"
 
 class RecipeDialog :
     public QDialog
@@ -13,10 +15,13 @@ class RecipeDialog :
 
 private:
     DataBase& database;
+    DataBaseSearcher db_searcher;
 
     Recipe rec;
 
     QLineEdit* name_line;
+    SearchField* search_field;
+
     FoodTable* food_table;
 
     QPushButton* accept_btn;
@@ -25,9 +30,12 @@ private:
 public:
 
     explicit RecipeDialog(const Recipe& r, DataBase& db, QWidget* parent = nullptr, 
-        Qt::WindowFlags f = Qt::WindowFlags());
+        Qt::WindowFlags f = Qt::Dialog);
 
 public slots:
     void handle_accept();
+
+signals:
+    void found(const Recipe&);
 };
 

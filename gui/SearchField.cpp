@@ -11,6 +11,8 @@ SearchField::SearchField(QObject* parent) : QObject(parent), results_visible(fal
 
     search_results = new QListWidget;
     search_results->setSelectionMode(QAbstractItemView::SingleSelection);
+    search_results->setFixedSize(200, 200);
+    search_results->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
     search_results->hide();
 
 
@@ -36,7 +38,7 @@ void SearchField::show_search_results(const QString& text)
     if (results_visible == false) {
         search_results->show();
         search_results->setGeometry(search_input->geometry().x(),
-            search_input->geometry().y() + search_input->height(), 100, 100);
+            search_input->geometry().y() + search_input->height(), 200, 200);
         results_visible = true;
     }
 }
@@ -93,7 +95,7 @@ bool SearchField::eventFilter(QObject* object, QEvent* event)
             if (r < search_results->count() - 1) search_results->setCurrentRow(r + 1);
             break;
         case Qt::Key_Return:
-            clicked(search_results->item(r));
+            if(results_visible) clicked(search_results->item(r));
             break;
 
         case Qt::Key_Escape:

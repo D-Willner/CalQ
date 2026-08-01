@@ -14,9 +14,11 @@ public:
 	explicit DataBaseSearcher(DataBase& db, QObject* parent = nullptr);
 
 public slots:
+	QStringList search_foodtypes(std::string name);
 	QStringList search_eatables(std::string name);
 	QStringList search_exercises(std::string name);
 
+	void emit_foodtypes(std::string name);
 	void emit_eatables(std::string name);
 	void emit_exercises(std::string name);
 
