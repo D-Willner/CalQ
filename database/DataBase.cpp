@@ -115,6 +115,29 @@ BODYWEIGHT_T DataBase::weight_on(QDate dt)
     else return -1;
 }
 
+template<typename T>
+std::vector<std::pair<QDate, std::vector<T>>> DataBase::T_range(QDate beg, QDate end, const std::map<QDate, std::vector<T>>& m)
+{
+    std::vector<std::pair<QDate, std::vector<T>>> ret;
+    for (QDate it = beg; it <= end; it++) {
+        if (m.count(it) == 0) {
+            ret.push_back({ it,std::vector<T>() });
+        }
+        else {
+            std::vector<T> v = m.at(it);
+            ret.push_back({ it, v });
+        }
+    }
+    return ret;
+}	
+
+std::vector<std::pair<QDate, std::vector<Food>>> DataBase::food_range(QDate beg, QDate end)
+    { return T_range(beg, end, food_history); }
+
+std::vector<std::pair<QDate, std::vector<Exercise>>> DataBase::exercise_range(QDate beg, QDate end)
+    { return T_range(beg, end, exercise_history); }
+
+
 std::vector<std::pair<QDate, BODYWEIGHT_T>> DataBase::weights_range(QDate beg, QDate end)
 {
     std::vector<std::pair<QDate, BODYWEIGHT_T>> ret;

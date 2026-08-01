@@ -74,6 +74,9 @@ private:
 	template<typename T>
 	T get(std::string name, const std::map<std::string, T>& m);
 
+	template<typename T>
+	std::vector<std::pair<QDate, std::vector<T>>>  T_range(QDate beg, QDate end, const std::map<QDate, std::vector<T>>& m);
+
 public:
 	enum DTYPE{
 		EMPTY_T,
@@ -104,7 +107,9 @@ public:
 	std::vector<Meal> meal_name_contains(std::string s);
 
 	std::vector<Food> food_on(QDate dt = QDate::currentDate());
+	std::vector<std::pair<QDate, std::vector<Food>>> food_range(QDate beg, QDate end = QDate::currentDate());
 	std::vector<Exercise> exercise_on(QDate dt = QDate::currentDate());
+	std::vector<std::pair<QDate, std::vector<Exercise>>> exercise_range(QDate beg, QDate end = QDate::currentDate());
 
 	BODYWEIGHT_T last_weight();
 	QDate last_weight_date();
