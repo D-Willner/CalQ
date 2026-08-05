@@ -1,7 +1,7 @@
 #include "ToolTip.h"
 
-ToolTip::ToolTip(const QString& text, QWidget* parent) : QLabel(parent)
+ToolTip::ToolTip(const QString& tt_text, QWidget* parent) : QLabel(parent)
 {
 	setPixmap(QIcon::fromTheme(QIcon::ThemeIcon::DialogInformation).pixmap(10));
-	setToolTip(text);
+	setToolTip(tt_text);
 }

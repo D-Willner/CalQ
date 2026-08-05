@@ -8,11 +8,11 @@ FoodTable::FoodTable(int rows, FTTYPE type, QWidget* parent) : QTableWidget(pare
 	this->setColumnCount(type == NO_FACTOR ? 7 : 8);
 
     if (type == NO_FACTOR) {
-        setHorizontalHeaderLabels({ "Name", "Amount", "Cals", "Prot", "Carbs", "Fats", "" });
+        setHorizontalHeaderLabels({ "Name", "Amount", "Calories", "Protein", "Carbs", "Fat", "" });
         setFixedWidth(475);   //  magic number that just works
     }
     else if (type == FACTOR) {
-        setHorizontalHeaderLabels({ "Name", "Amount", "Cals", "Prot", "Carbs", "Fats", "Factor", "" });
+        setHorizontalHeaderLabels({ "Name", "Amount", "Calories", "Protein", "Carbs", "Fat", "Factor", "" });
         setFixedWidth(535);
     }
     

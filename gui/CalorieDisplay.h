@@ -4,6 +4,7 @@
 #include <QLabel>
 #include <QVBoxLayout>
 #include "CalorieBars.h"
+#include "ToolTipLabel.h"
 
 class CalorieDisplay :
     public QWidget
@@ -16,7 +17,7 @@ private:
     CAL_T calorie_target;
 
     QVBoxLayout* layout;
-    QLabel* name_label;
+    ToolTipLabel* name_label;
     CalorieBars* draw_area;
 
 public:

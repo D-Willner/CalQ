@@ -19,8 +19,8 @@ int main(int argc, char *argv[])
     return app.exec();
 }
 
-/* TODO:    add InittializeDialog
-            add tool tips
+/* TODO:    README
+            add InitializeDialog
             SQL database
             local AI query for food information
 */

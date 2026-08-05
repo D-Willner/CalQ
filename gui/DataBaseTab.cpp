@@ -3,6 +3,7 @@
 #include <QVBoxLayout>
 #include <QLabel>
 #include "RecipeDialog.h"
+#include "ToolTipLabel.h"
 
 DataBaseTab::DataBaseTab(DataBase& db, QWidget* parent) : QWidget(parent), database(db)
 {
@@ -20,16 +21,23 @@ DataBaseTab::DataBaseTab(DataBase& db, QWidget* parent) : QWidget(parent), datab
 
 	QVBoxLayout* layout_left = new QVBoxLayout;
 
-	layout_left->addWidget(new QLabel("Foods:"), 0, Qt::AlignLeft);
+	layout_left->addWidget(new ToolTipLabel("Displays all the foods in the database.\n\
+Modify them by changing the values.\n\
+Remove them by pressing the \"-\" button.", "Foods:"), 0, Qt::AlignLeft);
 	layout_left->addWidget(food_type_table, 0, Qt::AlignLeft);
-	layout_left->addWidget(new QLabel("Recipes:"), 0, Qt::AlignLeft);
+	layout_left->addWidget(new ToolTipLabel("Displays all the recipes in the database.\n\
+Modify them by double clicking.\n\
+Remove them by pressing the \"-\" button.", "Recipes:"), 0, Qt::AlignLeft);
 	layout_left->addWidget(recipe_table, 0, Qt::AlignLeft);
-	layout_left->addWidget(new QLabel("Meals:"), 0, Qt::AlignLeft);
+	layout_left->addWidget(new ToolTipLabel("Displays all the meals in the database.\n\
+Remove them by pressing the \"-\" button.", "Meals:"), 0, Qt::AlignLeft);
 	layout_left->addWidget(meal_table, 0, Qt::AlignLeft);
 
 	QVBoxLayout* layout_right = new QVBoxLayout;
 
-	layout_right->addWidget(new QLabel("Exercises:"), 0, Qt::AlignLeft | Qt::AlignTop);
+	layout_right->addWidget(new ToolTipLabel("Displays all the exercises in the database.\n\
+Modify them by changing the values.\n\
+Remove them by pressing the \"-\" button.", "Exercises:"), 0, Qt::AlignLeft | Qt::AlignTop);
 	layout_right->addWidget(exercise_table,1, Qt::AlignRight | Qt::AlignTop);
 
 	QHBoxLayout* layout = new QHBoxLayout;

@@ -4,18 +4,24 @@
 #include <iostream>
 #include <QMessageBox>
 #include <cmath>
+#include "ToolTip.h"
+#include "ToolTipLabel.h"
 
 
 MainTab::MainTab(DataBase& db, Settings& s, QWidget* parent) 
     : QWidget(parent), database(db), settings(s), search_line(db, this)
 {
-    database_searcher = new DataBaseSearcher(db, this);
+    database_searcher = new DataBaseSearcher(db, this);    
+    
+    search_line.get_input_widget()->setToolTip("Search the database for food types, recipes and meals.\n\
+Alternatively add entries directly to the table.");
 
-    m_macroChart = new MacroChart;
-    m_macroChart->set_protein(db.today().protein());
-    m_macroChart->set_carbs(db.today().carbs());
-    m_macroChart->set_fats(db.today().fats());
-    m_macroChart->setFixedSize(400, 300);
+    macro_chart = new MacroChart;
+    macro_chart->set_protein(db.today().protein());
+    macro_chart->set_carbs(db.today().carbs());
+    macro_chart->set_fats(db.today().fats());
+    macro_chart->setFixedSize(400, 300);
+    macro_chart->setToolTip("Displays the macro nutrients consumed today.");
 
     calorie_display = new CalorieDisplay;
     calorie_display->set_target_calories(settings.get_calorie_target());    //  should update when settings updated
@@ -24,15 +30,23 @@ MainTab::MainTab(DataBase& db, Settings& s, QWidget* parent)
     food_table->set_editable(false);
 
     add_food_btn = new QPushButton("Add food");
+    add_food_btn->setToolTip("Adds all the food in the table below to foods eaten today.\nFood not in the database will automatically get added to it.");
     add_recipe_btn = new QPushButton("Add recipe");
+    add_recipe_btn->setToolTip("Creates a new recipe using the ingredients in the table below with name specified to the right.\n\
+It gets added to the foods eaten today and to the database, where it overwrites previous entries.\n\
+Use factor to eat partially and save the rest as a meal.");
     recipe_name_line = new QLineEdit;
-    recipe_name_line->setMinimumWidth(150);
+    recipe_name_line->setMinimumWidth(150);   
+    recipe_name_line->setToolTip("Create a new recipe using the ingredients in the table below with name specified here.");
 
     search_btn = new QPushButton("->");
     search_btn->setFixedWidth(30);
 
     add_table = new FoodTable(5, FoodTable::FACTOR);
     add_table->set_editable(true);
+    add_table->setToolTip("Use the search bar or directly edit the entries here.\n\
+Double clicking recipes will yield their ingredients.\n\
+Remove entries using the \"-\" Button.");
     
     exerciseTable = new ExerciseTable(5);
     exerciseTable->set_minimum_rows(5);
@@ -42,12 +56,16 @@ MainTab::MainTab(DataBase& db, Settings& s, QWidget* parent)
     //add_exercise_table->setMinimumRows(1);
 
     add_exercise_btn = new QPushButton("Add");
+    add_exercise_btn->setToolTip("Add the exercise in the table below to the exercises done today. An exercise not in the database will automatically get added to it.");
 
     search_exercise = new SearchField(this);
+    search_exercise->get_input_widget()->setToolTip("Search the database for exercise types already added.\nAlternatively add entries directly to the table.");
 
     weight_entry_editor = new QDoubleSpinBox;
     weight_entry_editor->setMaximum(500);
     weight_btn = new QPushButton("Update Weight");
+    weight_btn->setToolTip("Adds a new weight entry for today using the value to the left.\n\
+If one already exists, it is overwritten.");
     QDate day = QDate::currentDate();
     day = day.addDays(-7);
     weight_chart = new WeightChart(database.weights_range(day));
@@ -66,7 +84,9 @@ MainTab::MainTab(DataBase& db, Settings& s, QWidget* parent)
     QVBoxLayout* layout_exercise_left = new QVBoxLayout();
     QVBoxLayout* layout_exercise_right = new QVBoxLayout();
 
-    layout_exercise_left->addWidget(new QLabel("Exercised today:"));
+    ToolTipLabel* tt = new ToolTipLabel("Display all the exercises done today.\n\
+Press the \"-\" button to remove exercises.", "Exercised today:");
+    layout_exercise_left->addWidget(tt, 1, Qt::AlignLeft);
     layout_exercise_left->addWidget(exerciseTable,1,Qt::AlignTop);
 
     QHBoxLayout* layout_add_exercise = new QHBoxLayout();
@@ -74,7 +94,7 @@ MainTab::MainTab(DataBase& db, Settings& s, QWidget* parent)
     layout_add_exercise->addWidget(add_exercise_btn, 1, Qt::AlignLeft);
     layout_add_exercise->addWidget(search_exercise->get_input_widget());
 
-    layout_exercise_right->addWidget(new QLabel(""));
+    layout_exercise_right->addSpacing(40);  //  should use gridlayout here instead
     layout_exercise_right->addLayout(layout_add_exercise);
     layout_exercise_right->addWidget(add_exercise_table, 1, Qt::AlignTop);
 
@@ -86,7 +106,8 @@ MainTab::MainTab(DataBase& db, Settings& s, QWidget* parent)
     layout_left = new QVBoxLayout();
     layout_right = new QVBoxLayout();
 
-    layout_left->addWidget(new QLabel("Today: "));
+    layout_left->addWidget(new ToolTipLabel("Displays all the food eaten today.\n\
+Press the \"-\" button to remove food.", "Food today:"), 1, Qt::AlignLeft);
     layout_left->addWidget(food_table,0, Qt::AlignTop | Qt::AlignLeft);
     layout_left->addWidget(new QLabel(""));
     layout_left->addLayout(layout_add_table_upper);
@@ -95,11 +116,11 @@ MainTab::MainTab(DataBase& db, Settings& s, QWidget* parent)
     layout_left->addLayout(layout_exercise, 1);
 
     QHBoxLayout* layout_weight = new QHBoxLayout();
-    layout_weight->addWidget(weight_entry_editor,1,Qt::AlignTop  | Qt::AlignLeft);
-    layout_weight->addWidget(weight_btn, 0, Qt::AlignTop | Qt::AlignRight);
+    layout_weight->addWidget(weight_entry_editor,0,Qt::AlignTop  | Qt::AlignLeft);
+    layout_weight->addWidget(weight_btn, 1, Qt::AlignTop | Qt::AlignLeft);
 
     layout_right->addWidget(calorie_display, 0, Qt::AlignTop);
-    layout_right->addWidget(m_macroChart, 0, Qt::AlignTop | Qt::AlignLeft);
+    layout_right->addWidget(macro_chart, 0, Qt::AlignTop | Qt::AlignLeft);
     layout_right->addLayout(layout_weight);
     layout_right->addWidget(weight_chart, 1, Qt::AlignTop);
 
@@ -286,7 +307,7 @@ void MainTab::add_food_today()
             food_table->add_food(f);
 
             calorie_display->add_consumed_calories(f.calories());
-            m_macroChart->add_food(f);
+            macro_chart->add_food(f);
         }
 
         if (f.name() != "" && type != DataBase::DTYPE::MEAL_T && type != DataBase::DTYPE::RECIPE_T) {
@@ -303,7 +324,7 @@ void MainTab::remove_food_today(const Food& f)
 {
     database.today().remove_food(f.name());
     calorie_display->add_consumed_calories(-f.calories());
-    m_macroChart->remove_food(f);
+    macro_chart->remove_food(f);
 }
 
 void MainTab::adjustRow(QTableWidgetItem* item)

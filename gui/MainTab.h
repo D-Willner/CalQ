@@ -60,7 +60,7 @@ private:
 
     CalorieDisplay* calorie_display;
 
-    MacroChart* m_macroChart;
+    MacroChart* macro_chart;
 
     QDoubleSpinBox* weight_entry_editor;
     QPushButton* weight_btn;

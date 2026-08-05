@@ -6,6 +6,6 @@ class ToolTip :
     Q_OBJECT
 
 public:
-    explicit ToolTip(const QString& text, QWidget* parent = nullptr);
+    explicit ToolTip(const QString& tt_text, QWidget * parent = nullptr);
 };
 
