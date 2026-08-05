@@ -296,7 +296,7 @@ void FoodTable::clear_row(int row)
     }
 }
 
-void FoodTable::moveRowsUp(int r)
+void FoodTable::move_rows_up(int r)
 {
     for (int i = r; i < rowCount(); i++) {
         if (!row_is_free(i)) continue;
@@ -324,7 +324,7 @@ void FoodTable::clear_remove_row(int row)
     }
     else {
         clear_row(row);
-        moveRowsUp(row);
+        move_rows_up(row);
     }
 }
 

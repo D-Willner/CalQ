@@ -18,14 +18,14 @@ ExerciseTable::ExerciseTable(int rows, QWidget* parent) : QTableWidget(parent)
     verticalHeader()->hide();
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    for (int i = 0; i < rows; i++) addRow();
+    for (int i = 0; i < rows; i++) add_row();
 
-    setEditable(false);
+    set_editable(false);
     setFixedHeight(rowHeight(0) * (rows + 1));
-    setMinimumRows(rows);
+    set_minimum_rows(rows);
 }
 
-void ExerciseTable::insertRow(int row)
+void ExerciseTable::insert_row(int row)
 {
     QTableWidget::insertRow(row);
     QPushButton* btn = new QPushButton("-");
@@ -34,12 +34,12 @@ void ExerciseTable::insertRow(int row)
     QObject::connect(btn, &QPushButton::clicked, this, [=]() {clear_remove_emit_row(currentRow());});
 }
 
-void ExerciseTable::addRow()
+void ExerciseTable::add_row()
 {
-    insertRow(rowCount());
+    insert_row(rowCount());
 }
 
-void ExerciseTable::setEditable(bool canEdit)
+void ExerciseTable::set_editable(bool canEdit)
 {
     if (canEdit) {
         setEditTriggers(QAbstractItemView::CurrentChanged);
@@ -53,16 +53,16 @@ void ExerciseTable::setEditable(bool canEdit)
 
 void ExerciseTable::set_name_editable(bool can_edit) { name_editable = can_edit; }
 
-bool ExerciseTable::setExercise(const Exercise& e, int row)
+bool ExerciseTable::set_exercise(const Exercise& e, int row)
 {
     if (row >= rowCount()) return false;
 
     setItem(row, 1, new QTableWidgetItem(QString::number(e.duration())));
 
-    return setExerciseNoDuration(e, row);
+    return set_exercise_noduration(e, row);
 }
 
-bool ExerciseTable::setExerciseNoDuration(const Exercise& e, int row)
+bool ExerciseTable::set_exercise_noduration(const Exercise& e, int row)
 {
     if (row >= rowCount()) return false;
 
@@ -77,7 +77,7 @@ bool ExerciseTable::setExerciseNoDuration(const Exercise& e, int row)
     return true;
 }
 
-bool ExerciseTable::rowIsEmpty(int row)
+bool ExerciseTable::row_empty(int row)
 {
     if (row >= rowCount()) return true;
 
@@ -93,9 +93,9 @@ bool ExerciseTable::rowIsEmpty(int row)
     return true;
 }
 
-bool ExerciseTable::hasExercise(int row)
+bool ExerciseTable::has_exercise(int row)
 {
-    if (rowIsEmpty(row)) return false;
+    if (row_empty(row)) return false;
 
     auto cur = item(row, 1);
     bool ret;
@@ -113,7 +113,7 @@ bool ExerciseTable::hasExercise(int row)
     return true;
 }
 
-Exercise ExerciseTable::readExercise(int row)
+Exercise ExerciseTable::read_exercise(int row)
 {
     if (row >= rowCount()) throw new std::exception("Row out of bounds");
 
@@ -141,10 +141,10 @@ Exercise ExerciseTable::readExercise(int row)
 //int ExerciseTable::findExercise(const Exercise& e);
 
 
-void ExerciseTable::setMinimumRows(int min) { minRows = min; }
-int ExerciseTable::getMinimumRows() { return minRows; }
+void ExerciseTable::set_minimum_rows(int min) { min_rows = min; }
+int ExerciseTable::get_minimum_rows() { return min_rows; }
 
-void ExerciseTable::clearRow(int row)
+void ExerciseTable::clear_row(int row)
 {
     if (row >= rowCount()) return;
 
@@ -153,40 +153,40 @@ void ExerciseTable::clearRow(int row)
     setItem(row, 2, nullptr);
 }
 
-void ExerciseTable::removeRow(int row){ QTableWidget::removeRow(row); }
+void ExerciseTable::remove_row(int row){ QTableWidget::removeRow(row); }
 
 
 void ExerciseTable::clear_remove_row(int row)
 {
-    if (rowCount() > minRows) {
-        removeRow(row);
+    if (rowCount() > min_rows) {
+        remove_row(row);
     }
     else {
-        clearRow(row);
-        moveRowsUp(row);
+        clear_row(row);
+        move_rows_up(row);
     }
 }
 
 void ExerciseTable::clear_remove_emit_row(int row)
 {
-    if (hasExercise(row)) {
-        Exercise e = readExercise(row);
-        emit exerciseRemoved(e);
+    if (has_exercise(row)) {
+        Exercise e = read_exercise(row);
+        emit exercise_removed(e);
     }
 
     clear_remove_row(row);
 }
 
-void ExerciseTable::moveRowsUp(int startRow)
+void ExerciseTable::move_rows_up(int startRow)
 {
     for (int i = startRow; i < rowCount(); i++) {
-        if (!rowIsEmpty(i)) continue;
+        if (!row_empty(i)) continue;
 
         for (int j = i + 1; j < rowCount(); j++) {
-            if (hasExercise(j)) {
-                Exercise e = readExercise(j);
-                setExercise(e, i);
-                clearRow(j);
+            if (has_exercise(j)) {
+                Exercise e = read_exercise(j);
+                set_exercise(e, i);
+                clear_row(j);
                 break;
             }
         }
@@ -196,14 +196,14 @@ void ExerciseTable::moveRowsUp(int startRow)
 void ExerciseTable::addExercise(const Exercise& e)
 {
     for (int i = 0; i < rowCount(); i++) {
-        if (rowIsEmpty(i)) {
-            setExercise(e, i);
+        if (row_empty(i)) {
+            set_exercise(e, i);
             return;
         }
     }
 
-    addRow();
-    setExercise(e, rowCount() - 1);
+    add_row();
+    set_exercise(e, rowCount() - 1);
 }
 
 //void ExerciseTable::removeExercise(const Exercise& e);
@@ -213,6 +213,6 @@ void ExerciseTable::clear_table()
     int i = 0;
     while (i < rowCount()) {
         clear_remove_row(i);
-        if (rowIsEmpty(i)) i++;
+        if (row_empty(i)) i++;
     }
 }

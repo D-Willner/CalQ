@@ -18,6 +18,7 @@
 #include <QDoubleSpinBox>
 
 #include "database/DataBase.h"
+#include "database/Settings.h"
 #include "FoodTable.h"
 #include "SearchLine.h"
 #include "CalorieDisplay.h"
@@ -36,6 +37,7 @@ private:
     constexpr static double MEAL_MIN_PERCENTAGE = 0.01;
 
     DataBase& database;
+    Settings& settings;
 
     QHBoxLayout* layout_high;
     QVBoxLayout* layout_left;
@@ -71,7 +73,7 @@ private:
     DataBaseSearcher* database_searcher;
 
 public:
-    explicit MainTab(DataBase& db, QWidget* parent = nullptr);
+    explicit MainTab(DataBase& db, Settings& s, QWidget* parent = nullptr);
 
     void closeEvent(QCloseEvent* event) override
     {

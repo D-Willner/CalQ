@@ -4,102 +4,102 @@
 
 MacroChart::MacroChart(QWidget* parent) : QChartView(parent)
 {
-    m_chart = new QChart();
+    chart = new QChart();
     //m_chart->setMinimumSize(400, 300);
     //m_chart->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
-    m_data = new QBarSeries;
+    data = new QBarSeries;
 
-    m_protein = new QBarSet("Protein");
-    m_carbs = new QBarSet("Carbs");
-    m_fats = new QBarSet("Fats");
+    protein = new QBarSet("Protein");
+    carbs = new QBarSet("Carbs");
+    fats = new QBarSet("Fats");
 
-    m_protein->append(0);
-    m_carbs->append(0);
-    m_fats->append(0);
+    protein->append(0);
+    carbs->append(0);
+    fats->append(0);
 
-    m_data->append(m_protein);
-    m_data->append(m_carbs);
-    m_data->append(m_fats);
+    data->append(protein);
+    data->append(carbs);
+    data->append(fats);
 
-    m_chart->addSeries(m_data);
+    chart->addSeries(data);
 
-    m_yAxis = new QValueAxis;
-    m_chart->addAxis(m_yAxis, Qt::AlignLeft);
-    m_data->attachAxis(m_yAxis);
+    yaxis = new QValueAxis;
+    chart->addAxis(yaxis, Qt::AlignLeft);
+    data->attachAxis(yaxis);
 
-    m_chart->setAnimationOptions(QChart::SeriesAnimations);
+    chart->setAnimationOptions(QChart::SeriesAnimations);
 
     setRenderHint(QPainter::Antialiasing);
     setMinimumSize(400, 300);
     setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    setChart(m_chart);
+    setChart(chart);
 }
 
-int MacroChart::yAxisMax()
+int MacroChart::yaxis_is_max()
 {
-    WEIGHT_T m = std::max(protein(), carbs());
-    m = std::max(m, fats());
+    WEIGHT_T m = std::max(get_protein(), get_carbs());
+    m = std::max(m, get_fats());
 
     return ((int)m / 40 + 1) * 40;
 }
 
-void MacroChart::updateYAxis()
+void MacroChart::update_yaxis()
 {
-    m_yAxis->setRange(0, yAxisMax());
+    yaxis->setRange(0, yaxis_is_max());
 }
 
-WEIGHT_T MacroChart::protein() { return m_protein->at(0); }
-WEIGHT_T MacroChart::carbs() { return m_carbs->at(0); }
-WEIGHT_T MacroChart::fats() { return m_fats->at(0);  }
+WEIGHT_T MacroChart::get_protein() { return protein->at(0); }
+WEIGHT_T MacroChart::get_carbs() { return carbs->at(0); }
+WEIGHT_T MacroChart::get_fats() { return fats->at(0);  }
 
-void MacroChart::setProtein(WEIGHT_T p)
+void MacroChart::set_protein(WEIGHT_T p)
 { 
-    m_protein->replace(0, p); 
-    updateYAxis(); 
+    protein->replace(0, p); 
+    update_yaxis(); 
 }
 
-void MacroChart::setCarbs(WEIGHT_T c)
+void MacroChart::set_carbs(WEIGHT_T c)
 { 
-    m_carbs->replace(0, c); 
-    updateYAxis(); 
+    carbs->replace(0, c); 
+    update_yaxis(); 
 }
 
-void MacroChart::setFats(WEIGHT_T f)
+void MacroChart::set_fats(WEIGHT_T f)
 { 
-    m_fats->replace(0, f);
-    updateYAxis(); 
+    fats->replace(0, f);
+    update_yaxis(); 
 }
 
-void MacroChart::addProtein(WEIGHT_T p)
+void MacroChart::add_protein(WEIGHT_T p)
 { 
-    m_protein->replace(0, m_protein->at(0) + p); 
-    updateYAxis();
+    protein->replace(0, protein->at(0) + p); 
+    update_yaxis();
 }
 
-void MacroChart::addCarbs(WEIGHT_T c)
+void MacroChart::add_carbs(WEIGHT_T c)
 { 
-    m_carbs->replace(0, m_carbs->at(0) + c);
-    updateYAxis();
+    carbs->replace(0, carbs->at(0) + c);
+    update_yaxis();
 }
 
-void MacroChart::addFats(WEIGHT_T f)
+void MacroChart::add_fats(WEIGHT_T f)
 { 
-    m_fats->replace(0, m_fats->at(0) + f);
-    updateYAxis();
+    fats->replace(0, fats->at(0) + f);
+    update_yaxis();
 }
 
-void MacroChart::addFood(const Food& f) 
+void MacroChart::add_food(const Food& f) 
 {
-    addProtein(f.protein());
-    addCarbs(f.carbs());
-    addFats(f.fats());
+    add_protein(f.protein());
+    add_carbs(f.carbs());
+    add_fats(f.fats());
 }
 
-void MacroChart::removeFood(const Food& f)
+void MacroChart::remove_food(const Food& f)
 {
-    addProtein(-f.protein());
-    addCarbs(-f.carbs());
-    addFats(-f.fats());
+    add_protein(-f.protein());
+    add_carbs(-f.carbs());
+    add_fats(-f.fats());
 }

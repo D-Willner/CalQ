@@ -61,7 +61,7 @@ public:
     void clear_remove_row(int row);
     void clear_remove_emit_row(int row);
 
-    void moveRowsUp(int r = 0);
+    void move_rows_up(int r = 0);
 
     //  void removeRow(int) from parent
 

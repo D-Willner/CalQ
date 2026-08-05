@@ -46,7 +46,7 @@ DataBaseTab::DataBaseTab(DataBase& db, QWidget* parent) : QWidget(parent), datab
 		this, [=](const Food& f) {database.remove_recipe(f.name());});
 	QObject::connect(meal_table, &FoodTable::food_removed,
 		this, [=](const Food& f) {database.remove_meal(f.name());});
-	QObject::connect(exercise_table, &ExerciseTable::exerciseRemoved,
+	QObject::connect(exercise_table, &ExerciseTable::exercise_removed,
 		this, [=](const Exercise& e) {database.remove_exercisetype(e.name());});
 
 	QObject::connect(food_type_table, &FoodTable::cellChanged, this, &DataBaseTab::handle_ft_change);

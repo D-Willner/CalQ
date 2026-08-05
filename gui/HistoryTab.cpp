@@ -2,9 +2,11 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QPixMap>
+#include "ToolTip.h"
 
-HistoryTab::HistoryTab(DataBase& db, QWidget* parent) 
-	: QWidget(parent), database(db), series_one(nullptr), series_two(nullptr)
+HistoryTab::HistoryTab(DataBase& db, Settings& s, QWidget* parent) 
+	: QWidget(parent), database(db), settings(s), series_one(nullptr), series_two(nullptr)
 {
 	start_date_selector = new QDateEdit(QDate::currentDate().addDays(-7));
 	start_date_selector->setCalendarPopup(true);
@@ -37,15 +39,19 @@ HistoryTab::HistoryTab(DataBase& db, QWidget* parent)
 
 	update_y1_axis();
 	update_y2_axis();
+	//update_x_axis();
 
 	chart_view = new QChartView(chart);
 
 	QHBoxLayout* layout_selectors = new QHBoxLayout;
+	
+	layout_selectors->addWidget(new ToolTip("Select the date range to display data from."));
 	layout_selectors->addWidget(new QLabel("From: "));
 	layout_selectors->addWidget(start_date_selector, 0, Qt::AlignLeft);
 	layout_selectors->addWidget(new QLabel("To: "));
 	layout_selectors->addWidget(end_date_selector,0, Qt::AlignLeft);
 	layout_selectors->addWidget(new QLabel("            "), 0, Qt::AlignLeft);
+	layout_selectors->addWidget(new ToolTip("Select which data should be displayed."));
 	layout_selectors->addWidget(new QLabel("Show: "), 0, Qt::AlignLeft);
 	layout_selectors->addWidget(data_one_selector, 0, Qt::AlignLeft);
 	layout_selectors->addWidget(data_two_selector, 1, Qt::AlignLeft);
@@ -54,6 +60,7 @@ HistoryTab::HistoryTab(DataBase& db, QWidget* parent)
 	layout->addLayout(layout_selectors);
 	layout->addWidget(chart_view, 1);
 
+	setFocusPolicy(Qt::ClickFocus);
 	setLayout(layout);
 	chart_view->setRenderHint(QPainter::Antialiasing);
 	//chart->setAnimationOptions(QChart::SeriesAnimations);
@@ -74,8 +81,19 @@ void HistoryTab::update_x_axis()
 	QDate start = start_date_selector->date();
 	QDate end = end_date_selector->date();
 
-	x_axis->setMin(QDateTime(start, QTime(0, 0)));
-	x_axis->setMax(QDateTime(start, QTime(0, 0)));
+	if (!(start < end)) {
+		start = end.addDays(-7);
+		start_date_selector->setDate(end.addDays(-7));
+	}
+
+	QDateTime start_dt = QDateTime(start, QTime(0, 0));
+	QDateTime end_dt = QDateTime(end, QTime(0, 0));
+
+	x_axis->setMin(start_dt);
+	x_axis->setMax(end_dt);
+
+	int ticks = (end_dt - start_dt).count() / (1000 * 60 * 60 * 24) + 1;
+	x_axis->setTickCount(ticks);
 }
 
 
@@ -188,7 +206,7 @@ QLineSeries* HistoryTab::fetch_cal_diff(QDate start, QDate end)
 			sum += ex.calories();
 		}
 
-		data->append(QDateTime(date, QTime(0, 0)).toMSecsSinceEpoch(), sum  - 1500 - ex_sum);
+		data->append(QDateTime(date, QTime(0, 0)).toMSecsSinceEpoch(), sum  - settings.get_cal_burn() - ex_sum);
 		// TODO load calorie usage from settings
 	}
 

@@ -40,25 +40,25 @@ void DataCurrent::set_weight(BODYWEIGHT_T w)
 }
 
 
-void DataCurrent::add_Food(const Food& f) 
+void DataCurrent::add_food(const Food& f) 
 { 
 	add_v(f, eaten); 
 	database.add(f); 
 }
 
-bool DataCurrent::remove_Food(std::string name) 
+bool DataCurrent::remove_food(std::string name) 
 {
 	database.remove_food(name);
 	return remove_v(name, eaten); 
 }
 
-void DataCurrent::add_Exercise(const Exercise& e) 
+void DataCurrent::add_exercise(const Exercise& e) 
 { 
 	add_v(e, exercised);
 	database.add(e);
 }
 
-bool DataCurrent::remove_Exercise(std::string name) 
+bool DataCurrent::remove_exercise(std::string name) 
 { 
 	database.remove_exercise(name);
 	return remove_v(name, exercised); 

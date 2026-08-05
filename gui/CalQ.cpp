@@ -1,17 +1,17 @@
 #include "CalQ.h"
 
-CalQ::CalQ(DataBase& db, QWidget *parent)
-    : QWidget(parent), database(db)
+CalQ::CalQ(DataBase& db, Settings& s, QWidget* parent)
+    : QWidget(parent), database(db), settings(s)
 { 
     //setGeometry(0, 0, 800, 600);
 
     //setMinimumSize(800, 600);
 
     tabs = new QTabWidget(this);
-    main_tab = new MainTab(database);
+    main_tab = new MainTab(database, settings);
     database_tab = new DataBaseTab(database);
-    history_tab = new HistoryTab(database);
-    settings_tab = new SettingsTab();
+    history_tab = new HistoryTab(database, settings);
+    settings_tab = new SettingsTab(settings);
     
     //tabs->setMinimumSize(600, 600);
 

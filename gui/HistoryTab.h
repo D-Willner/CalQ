@@ -10,6 +10,7 @@
 #include <QValueAxis>
 
 #include "database/DataBase.h"
+#include "database/Settings.h"
 
 class HistoryTab :
     public QWidget
@@ -21,6 +22,7 @@ private:
         = { "None", "Weight", "Calories eaten", "Calorie delta", "Exercised calories" };
 
     DataBase& database;
+    Settings& settings;
 
     QDateEdit* start_date_selector;
     QDateEdit* end_date_selector;
@@ -43,13 +45,13 @@ private:
     void update_y1_axis();
     void update_y2_axis();
 
-    //  must be deleted or have ownership transferred
+    //!!!  must be deleted or have ownership transferred
     QLineSeries* fetch_weight(QDate start, QDate end);
     QLineSeries* fetch_cal_eaten(QDate start, QDate end);
     QLineSeries* fetch_cal_diff(QDate start, QDate end);
     QLineSeries* fetch_cal_ex(QDate start, QDate end);
 
 public:
-    explicit HistoryTab(DataBase& db, QWidget* parent = nullptr);
+    explicit HistoryTab(DataBase& db, Settings& s, QWidget* parent = nullptr);
 };
 

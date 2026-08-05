@@ -9,37 +9,37 @@ class ExerciseTable :
 
 private:
 
-    int minRows=1;
+    int min_rows=1;
 
     bool name_editable = true;
 
     bool row_is_free(int row);
 
-    bool rowIsEmpty(int row);
+    bool row_empty(int row);
 
 public:
     explicit ExerciseTable(int rows, QWidget* parent = nullptr);
 
-    void setEditable(bool canEdit);
+    void set_editable(bool canEdit);
     void set_name_editable(bool can_edit);
 
-    bool setExercise(const Exercise& e, int row);
-    bool setExerciseNoDuration(const Exercise& e, int row);
-    bool hasExercise(int row);
-    Exercise readExercise(int row);
+    bool set_exercise(const Exercise& e, int row);
+    bool set_exercise_noduration(const Exercise& e, int row);
+    bool has_exercise(int row);
+    Exercise read_exercise(int row);
     //int findExercise(const Exercise& e);
 
-    void setMinimumRows(int min);
-    int getMinimumRows();
+    void set_minimum_rows(int min);
+    int get_minimum_rows();
 
-    void insertRow(int row);
-    void addRow();
+    void insert_row(int row);
+    void add_row();
 
-    void clearRow(int row);
-    void removeRow(int row);
+    void clear_row(int row);
+    void remove_row(int row);
     void clear_remove_row(int row);
     void clear_remove_emit_row(int row);
-    void moveRowsUp(int startRow = 0);
+    void move_rows_up(int startRow = 0);
 
 public slots:
     void addExercise(const Exercise& e);
@@ -47,6 +47,6 @@ public slots:
     void clear_table();
 
 signals:
-    void exerciseRemoved(const Exercise& e);
+    void exercise_removed(const Exercise& e);
 };
 

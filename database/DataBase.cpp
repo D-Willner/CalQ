@@ -487,7 +487,6 @@ std::string lower(const std::string& s)
     return cpy;
 }
 
-//  could be done better by using that map iterates over keys in order?
 template<typename T>
 std::vector<T> DataBase::Tvec_name_contains(std::string s, const std::map<std::string, T>& m)
 {

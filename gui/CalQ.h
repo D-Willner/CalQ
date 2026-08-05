@@ -27,9 +27,10 @@ private:
     QVBoxLayout* layout;
 
     DataBase& database;
+    Settings& settings;
 
 public:
-    CalQ(DataBase& db, QWidget *parent = nullptr);
+    CalQ(DataBase& db, Settings& s, QWidget *parent = nullptr);
     ~CalQ();
 
 };

@@ -40,10 +40,10 @@ public:
 	const std::vector<Food> eaten_today();
 	const std::vector<Exercise> exercised_today();
 
-	void add_Food(const Food& f);
-	bool remove_Food(std::string name);
+	void add_food(const Food& f);
+	bool remove_food(std::string name);
 
-	void add_Exercise(const Exercise& e);
-	bool remove_Exercise(std::string name);
+	void add_exercise(const Exercise& e);
+	bool remove_exercise(std::string name);
 };
 

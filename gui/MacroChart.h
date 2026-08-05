@@ -11,36 +11,36 @@ class MacroChart :
     Q_OBJECT
 
 private:
-    QChart* m_chart;
+    QChart* chart;
 
-    QBarSeries* m_data;
+    QBarSeries* data;
 
-    QBarSet* m_protein;
-    QBarSet* m_carbs;
-    QBarSet* m_fats;
+    QBarSet* protein;
+    QBarSet* carbs;
+    QBarSet* fats;
 
-    QValueAxis* m_yAxis;
+    QValueAxis* yaxis;
 
-    int yAxisMax();
-    void updateYAxis();
+    int yaxis_is_max();
+    void update_yaxis();
 
 public:
     explicit MacroChart(QWidget* parent = nullptr);
 
 public slots:
-    WEIGHT_T protein();
-    WEIGHT_T carbs();
-    WEIGHT_T fats();
+    WEIGHT_T get_protein();
+    WEIGHT_T get_carbs();
+    WEIGHT_T get_fats();
 
-    void setProtein(WEIGHT_T p);
-    void setCarbs(WEIGHT_T c);
-    void setFats(WEIGHT_T f);
+    void set_protein(WEIGHT_T p);
+    void set_carbs(WEIGHT_T c);
+    void set_fats(WEIGHT_T f);
 
-    void addProtein(WEIGHT_T p);
-    void addCarbs(WEIGHT_T c);
-    void addFats(WEIGHT_T f);
+    void add_protein(WEIGHT_T p);
+    void add_carbs(WEIGHT_T c);
+    void add_fats(WEIGHT_T f);
 
-    void addFood(const Food& f);
-    void removeFood(const Food& f);
+    void add_food(const Food& f);
+    void remove_food(const Food& f);
 };
 

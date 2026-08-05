@@ -6,18 +6,19 @@
 #include <cmath>
 
 
-MainTab::MainTab(DataBase& db, QWidget* parent) : QWidget(parent), database(db), search_line(db, this)
+MainTab::MainTab(DataBase& db, Settings& s, QWidget* parent) 
+    : QWidget(parent), database(db), settings(s), search_line(db, this)
 {
     database_searcher = new DataBaseSearcher(db, this);
 
     m_macroChart = new MacroChart;
-    m_macroChart->setProtein(db.today().protein());
-    m_macroChart->setCarbs(db.today().carbs());
-    m_macroChart->setFats(db.today().fats());
+    m_macroChart->set_protein(db.today().protein());
+    m_macroChart->set_carbs(db.today().carbs());
+    m_macroChart->set_fats(db.today().fats());
     m_macroChart->setFixedSize(400, 300);
 
     calorie_display = new CalorieDisplay;
-    calorie_display->set_target_calories(1500); //  Make this a setting
+    calorie_display->set_target_calories(settings.get_calorie_target());    //  should update when settings updated
 
     food_table = new FoodTable(5, FoodTable::NO_FACTOR);
     food_table->set_editable(false);
@@ -34,10 +35,10 @@ MainTab::MainTab(DataBase& db, QWidget* parent) : QWidget(parent), database(db),
     add_table->set_editable(true);
     
     exerciseTable = new ExerciseTable(5);
-    exerciseTable->setMinimumRows(5);
+    exerciseTable->set_minimum_rows(5);
 
     add_exercise_table = new ExerciseTable(1);
-    add_exercise_table->setEditable(true);
+    add_exercise_table->set_editable(true);
     //add_exercise_table->setMinimumRows(1);
 
     add_exercise_btn = new QPushButton("Add");
@@ -125,7 +126,7 @@ MainTab::MainTab(DataBase& db, QWidget* parent) : QWidget(parent), database(db),
     QObject::connect(search_exercise, &SearchField::request, database_searcher, &DataBaseSearcher::emit_exercises);
     QObject::connect(database_searcher, &DataBaseSearcher::results, search_exercise, &SearchField::update_search_results);
     QObject::connect(add_exercise_btn, &QPushButton::clicked, this, &MainTab::add_exercise_today);    
-    QObject::connect(exerciseTable, &ExerciseTable::exerciseRemoved, this, &MainTab::remove_exercise_today);
+    QObject::connect(exerciseTable, &ExerciseTable::exercise_removed, this, &MainTab::remove_exercise_today);
     QObject::connect(add_exercise_table, &ExerciseTable::itemChanged, this, &MainTab::adjust_row_ex);
     QObject::connect(search_exercise, &SearchField::found, this, &MainTab::exercise_found);
 
@@ -166,13 +167,13 @@ void MainTab::exercise_found(std::string name)
 
 void MainTab::add_exercise_today()
 {
-    if (add_exercise_table->rowCount() < 1 || !add_exercise_table->hasExercise(0)) return;
+    if (add_exercise_table->rowCount() < 1 || !add_exercise_table->has_exercise(0)) return;
 
-    Exercise ex = add_exercise_table->readExercise(0);
+    Exercise ex = add_exercise_table->read_exercise(0);
     auto type = database.contains(ex.name());
 
     exerciseTable->addExercise(ex);
-    database.today().add_Exercise(ex);
+    database.today().add_exercise(ex);
     database.add(ex.exercise_type());
     calorie_display->add_exercised_calories(ex.calories());
 
@@ -181,7 +182,7 @@ void MainTab::add_exercise_today()
 
 void MainTab::remove_exercise_today(const Exercise& ex)
 {
-    database.today().remove_Exercise(ex.name());
+    database.today().remove_exercise(ex.name());
     calorie_display->add_exercised_calories(-ex.calories());
 }
 
@@ -190,14 +191,14 @@ void MainTab::adjust_row_ex(QTableWidgetItem* item)
     int r = item->row();
     if (r != 0 || item->column() != 1) return;
 
-    if (!add_exercise_table->hasExercise(r)) return;
+    if (!add_exercise_table->has_exercise(r)) return;
 
-    Exercise ex = add_exercise_table->readExercise(r);
+    Exercise ex = add_exercise_table->read_exercise(r);
     auto type = database.contains(ex.name());
     if (type != DataBase::DTYPE::EXERCISETYPE_T) return;
 
     ExerciseType et = database.get_exercisetype(ex.name());
-    add_exercise_table->setExerciseNoDuration(Exercise(et, ex.duration()), r);
+    add_exercise_table->set_exercise_noduration(Exercise(et, ex.duration()), r);
 }
 
 void MainTab::add_recipe()
@@ -281,11 +282,11 @@ void MainTab::add_food_today()
         }
 
         if (f.name() != "" || f.calories() != 0) {
-            database.today().add_Food(f);
+            database.today().add_food(f);
             food_table->add_food(f);
 
             calorie_display->add_consumed_calories(f.calories());
-            m_macroChart->addFood(f);
+            m_macroChart->add_food(f);
         }
 
         if (f.name() != "" && type != DataBase::DTYPE::MEAL_T && type != DataBase::DTYPE::RECIPE_T) {
@@ -300,9 +301,9 @@ void MainTab::add_food_today()
 
 void MainTab::remove_food_today(const Food& f)
 {
-    database.today().remove_Food(f.name());
+    database.today().remove_food(f.name());
     calorie_display->add_consumed_calories(-f.calories());
-    m_macroChart->removeFood(f);
+    m_macroChart->remove_food(f);
 }
 
 void MainTab::adjustRow(QTableWidgetItem* item)
