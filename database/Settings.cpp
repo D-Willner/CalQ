@@ -1,5 +1,6 @@
 #include "Settings.h"
 #include <QFile>
+#include <QDir>
 
 BODYWEIGHT_T Settings::get_target_weight() const { return target_weight; }
 BODYWEIGHT_T Settings::get_starting_weight() const { return starting_weight; }
@@ -54,6 +55,10 @@ bool Settings::save() const
 
 Settings Settings::load()
 {
+	if (!QDir("./resources").exists()) {
+		QDir().mkdir("resources");
+	}
+
 	QFile file("resources/settings.json");
 
 	bool res;

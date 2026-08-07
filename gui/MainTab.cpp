@@ -107,7 +107,7 @@ Press the \"-\" button to remove exercises.", "Exercised today:");
     layout_right = new QVBoxLayout();
 
     layout_left->addWidget(new ToolTipLabel("Displays all the food eaten today.\n\
-Press the \"-\" button to remove food.", "Food today:"), 1, Qt::AlignLeft);
+Press the \"-\" button to remove food.", "Eaten today:"), 1, Qt::AlignLeft);
     layout_left->addWidget(food_table,0, Qt::AlignTop | Qt::AlignLeft);
     layout_left->addWidget(new QLabel(""));
     layout_left->addLayout(layout_add_table_upper);

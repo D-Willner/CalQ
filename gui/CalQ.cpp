@@ -1,4 +1,5 @@
 #include "CalQ.h"
+#include <QDir>
 
 CalQ::CalQ(DataBase& db, Settings& s, QWidget* parent)
     : QWidget(parent), database(db), settings(s)

@@ -1,5 +1,6 @@
 #include "DataBase.h"
 #include <cctype>
+#include <QDir>
 
 /*
 bool DataBase::load_foods()
@@ -66,7 +67,11 @@ bool DataBase::save_foods()
 */
 
 DataBase::DataBase() : data_today(*this) 
-{ 
+{
+    if (!QDir("./resources").exists()) {
+        QDir().mkdir("resources");
+    }
+
     load(); 
     data_today.load();
 };
