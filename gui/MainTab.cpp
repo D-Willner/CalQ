@@ -57,7 +57,6 @@ Remove entries using the \"-\" Button.");
 
     add_exercise_table = new ExerciseTable(1);
     add_exercise_table->set_editable(true);
-    //add_exercise_table->setMinimumRows(1);
 
     add_exercise_btn = new QPushButton("Add");
     add_exercise_btn->setToolTip("Add the exercise in the table below to the exercises done today. An exercise not in the database will automatically get added to it.");

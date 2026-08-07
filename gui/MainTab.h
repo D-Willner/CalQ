@@ -21,7 +21,6 @@
 #include "database/Settings.h"
 #include "database/DataBaseSearcher.h"
 #include "FoodTable.h"
-#include "SearchLine.h"
 #include "CalorieDisplay.h"
 #include "MacroChart.h"
 #include "ExerciseTable.h"
