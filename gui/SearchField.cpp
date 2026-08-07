@@ -11,7 +11,7 @@ SearchField::SearchField(QObject* parent) : QObject(parent), results_visible(fal
 
     search_results = new QListWidget;
     search_results->setSelectionMode(QAbstractItemView::SingleSelection);
-    search_results->setFixedSize(200, 200);
+    search_results->setFixedSize(200, 100);
     search_results->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
     search_results->hide();
 

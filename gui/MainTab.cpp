@@ -9,11 +9,14 @@
 
 
 MainTab::MainTab(DataBase& db, Settings& s, QWidget* parent) 
-    : QWidget(parent), database(db), settings(s), search_line(db, this)
+    : QWidget(parent), database(db), settings(s)
 {
-    database_searcher = new DataBaseSearcher(db, this);    
+    exercise_searcher = new DataBaseSearcher(db, this);    
+    eatables_searcher = new DataBaseSearcher(db, this);
     
-    search_line.get_input_widget()->setToolTip("Search the database for food types, recipes and meals.\n\
+    search_eatables = new SearchField;
+
+    search_eatables->get_input_widget()->setToolTip("Search the database for food types, recipes and meals.\n\
 Alternatively add entries directly to the table.");
 
     macro_chart = new MacroChart;
@@ -44,6 +47,7 @@ Use factor to eat partially and save the rest as a meal.");
 
     add_table = new FoodTable(5, FoodTable::FACTOR);
     add_table->set_editable(true);
+    add_table->set_amount_adjust(true);
     add_table->setToolTip("Use the search bar or directly edit the entries here.\n\
 Double clicking recipes will yield their ingredients.\n\
 Remove entries using the \"-\" Button.");
@@ -73,7 +77,7 @@ If one already exists, it is overwritten.");
 
     layout_add_table_upper = new QHBoxLayout();
     layout_add_table_upper->addWidget(add_food_btn,1 ,Qt::AlignLeft);
-    layout_add_table_upper->addWidget(search_line.get_input_widget(), 0, Qt::AlignRight);
+    layout_add_table_upper->addWidget(search_eatables->get_input_widget(), 0, Qt::AlignRight);
     layout_add_table_upper->addWidget(search_btn, 0, Qt::AlignRight);
 
     layout_add_table_lower = new QHBoxLayout();
@@ -129,23 +133,24 @@ Press the \"-\" button to remove food.", "Eaten today:"), 1, Qt::AlignLeft);
 
     setLayout(layout_high);
 
-    search_line.get_result_widget()->setParent(this);
-    search_line.get_result_widget()->hide();
+    search_eatables->get_result_widget()->setParent(this);
+    search_eatables->get_result_widget()->hide();
 
     search_exercise->get_result_widget()->setParent(this);
 
     QObject::connect(add_food_btn, SIGNAL(clicked()), this, SLOT(add_food_today()));
     QObject::connect(food_table, SIGNAL(food_removed(const Food&)), this, SLOT(remove_food_today(const Food&)));
-    QObject::connect(&search_line, SIGNAL(found(const Food&)), add_table, SLOT(add_food(const Food&)));
-    QObject::connect(&search_line, &SearchLine::found_meal, add_table, &FoodTable::add_meal);
-    QObject::connect(&search_line, &SearchLine::found, this, &MainTab::consider_food);
-    QObject::connect(add_table, &FoodTable::itemChanged, this, &MainTab::adjustRow);
+
+    QObject::connect(search_eatables, &SearchField::request, eatables_searcher, &DataBaseSearcher::emit_eatables);
+    QObject::connect(eatables_searcher, &DataBaseSearcher::results, search_eatables, &SearchField::update_search_results);
+    QObject::connect(search_eatables, &SearchField::found, this, &MainTab::consider_found_eatable);
+
     QObject::connect(add_recipe_btn, &QPushButton::clicked, this, &MainTab::add_recipe);
     QObject::connect(search_btn, &QPushButton::clicked, this, &MainTab::add_empty_food);
     QObject::connect(add_table, &FoodTable::food_double_clicked, this, &MainTab::expand_recipe);
 
-    QObject::connect(search_exercise, &SearchField::request, database_searcher, &DataBaseSearcher::emit_exercises);
-    QObject::connect(database_searcher, &DataBaseSearcher::results, search_exercise, &SearchField::update_search_results);
+    QObject::connect(search_exercise, &SearchField::request, exercise_searcher, &DataBaseSearcher::emit_exercises);
+    QObject::connect(exercise_searcher, &DataBaseSearcher::results, search_exercise, &SearchField::update_search_results);
     QObject::connect(add_exercise_btn, &QPushButton::clicked, this, &MainTab::add_exercise_today);    
     QObject::connect(exerciseTable, &ExerciseTable::exercise_removed, this, &MainTab::remove_exercise_today);
     QObject::connect(add_exercise_table, &ExerciseTable::itemChanged, this, &MainTab::adjust_row_ex);
@@ -237,6 +242,9 @@ void MainTab::add_recipe()
 
     Recipe r(name, foods);
     database.add(r);
+    for (auto& f : foods) {
+        database.add(f.food_type());
+    }
 
     add_table->clear_table();
     add_table->add_food(r.as_food());
@@ -245,13 +253,13 @@ void MainTab::add_recipe()
 
 void MainTab::add_empty_food()
 {
-    std::string name = search_line.text();
+    std::string name = search_eatables->text();
     if (database.contains(name) == DataBase::DTYPE::EMPTY_T) {
         add_table->add_food(Food(FoodType(name), 0));
-        search_line.clear_text();
+        search_eatables->clear_text();
     }
     else {
-        search_line.clicked_name(name);
+        search_eatables->clicked_name(name);
     }
 }
 
@@ -261,6 +269,24 @@ void MainTab::consider_food(const Food& f)
 
     if (type == DataBase::DTYPE::RECIPE_T) {
         recipe_name_line->setText(QString::fromStdString(f.name()));
+    }
+
+    
+}
+
+void MainTab::consider_found_eatable(std::string name)
+{
+    auto type = database.contains(name);
+
+    if (type == DataBase::DTYPE::RECIPE_T) {
+        recipe_name_line->setText(QString::fromStdString(name));
+        add_table->add_food(database.get_recipe(name).as_food());
+    } else if (type == DataBase::DTYPE::MEAL_T) {
+        add_table->add_meal(database.get_meal(name));
+    }
+    else {
+        auto ft = database.get_foodtype(name);
+        add_table->add_food(Food(ft,ft.get_size()));
     }
 }
 
@@ -325,24 +351,6 @@ void MainTab::remove_food_today(const Food& f)
     database.today().remove_food(f.name());
     calorie_display->add_consumed_calories(-f.calories());
     macro_chart->remove_food(f);
-}
-
-void MainTab::adjustRow(QTableWidgetItem* item)
-{
-    if (item->column() == 1 && add_table->item(item->row(), 0) != nullptr) {
-        int row = item->row();
-        std::string name = add_table->item(row, 0)->text().toStdString();
-        auto type = database.contains(name);
-        if (type == DataBase::FOODTYPE_T) {
-            FoodType ft = database.get_foodtype(name);
-            bool conv;
-            int weight = item->text().toInt(&conv);
-            if (conv) {
-                Food f(ft, weight);
-                add_table->set_food_no_amount(f, row);
-            }
-        }
-    }
 }
 
 void MainTab::expand_recipe(const Food& f, int row)

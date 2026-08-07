@@ -20,6 +20,7 @@ int main(int argc, char *argv[])
 }
 
 /* TODO:    README
+            SearchLine size
             add InitializeDialog
             SQL database
             local AI query for food information

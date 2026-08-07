@@ -9,19 +9,20 @@ FoodTable::FoodTable(int rows, FTTYPE type, QWidget* parent) : QTableWidget(pare
 
     if (type == NO_FACTOR) {
         setHorizontalHeaderLabels({ "Name", "Amount", "Calories", "Protein", "Carbs", "Fat", "" });
-        setFixedWidth(475);   //  magic number that just works
+        setFixedWidth(NAME_COL_SIZE + 6 * (VALUE_COL_SIZE + 5));   //  magic number that just works
     }
     else if (type == FACTOR) {
         setHorizontalHeaderLabels({ "Name", "Amount", "Calories", "Protein", "Carbs", "Fat", "Factor", "" });
-        setFixedWidth(535);
+        setFixedWidth(NAME_COL_SIZE + 7 * (VALUE_COL_SIZE + 5));
     }
     
-    this->setColumnWidth(1, 60);
-    this->setColumnWidth(2, 60);
-    this->setColumnWidth(3, 60);
-    this->setColumnWidth(4, 60);
-    this->setColumnWidth(5, 60);
-    this->setColumnWidth(6, 60);
+    this->setColumnWidth(0, NAME_COL_SIZE);
+    this->setColumnWidth(1, VALUE_COL_SIZE);
+    this->setColumnWidth(2, VALUE_COL_SIZE);
+    this->setColumnWidth(3, VALUE_COL_SIZE);
+    this->setColumnWidth(4, VALUE_COL_SIZE);
+    this->setColumnWidth(5, VALUE_COL_SIZE);
+    this->setColumnWidth(6, VALUE_COL_SIZE);
     if (type == FACTOR) this->setColumnWidth(7, 60);
 
 

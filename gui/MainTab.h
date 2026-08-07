@@ -19,13 +19,13 @@
 
 #include "database/DataBase.h"
 #include "database/Settings.h"
+#include "database/DataBaseSearcher.h"
 #include "FoodTable.h"
 #include "SearchLine.h"
 #include "CalorieDisplay.h"
 #include "MacroChart.h"
 #include "ExerciseTable.h"
 #include "SearchField.h"
-#include "database/DataBaseSearcher.h"
 #include "WeightChart.h"
 
 class MainTab :
@@ -49,14 +49,16 @@ private:
     QHBoxLayout* layout_add_table_upper;
     QPushButton* add_food_btn;
     QPushButton* search_btn;
-    SearchLine search_line;
+    //SearchLine search_line;
+    SearchField* search_eatables;
+    DataBaseSearcher* eatables_searcher;
+
 
     QHBoxLayout* layout_add_table_lower;
     QPushButton* add_recipe_btn;
     QLineEdit* recipe_name_line;
 
     FoodTable* add_table;
-
 
     CalorieDisplay* calorie_display;
 
@@ -70,7 +72,7 @@ private:
     ExerciseTable* add_exercise_table;
     QPushButton* add_exercise_btn;
     SearchField* search_exercise;
-    DataBaseSearcher* database_searcher;
+    DataBaseSearcher* exercise_searcher;
 
 public:
     explicit MainTab(DataBase& db, Settings& s, QWidget* parent = nullptr);
@@ -83,13 +85,14 @@ public:
     }
 
 public:
-    void adjustRow(QTableWidgetItem* item);
+    //void adjustRow(QTableWidgetItem* item);
 
 private slots:
     void add_food_today();
     void remove_food_today(const Food& f);
     void add_recipe();
     void consider_food(const Food& f);
+    void consider_found_eatable(std::string name);
     void add_empty_food();
     void expand_recipe(const Food&, int row);
 

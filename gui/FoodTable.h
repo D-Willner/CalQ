@@ -18,8 +18,11 @@ private:
 
     std::vector<WEIGHT_T> prev_weights;
 
+    constexpr static int NAME_COL_SIZE = 200;
+    constexpr static int VALUE_COL_SIZE = 60;
+
 public slots:
-    bool adjust_row(int row);   //  after a weight change in the row
+    bool adjust_row(int row);   //  afteconstexprr a weight change in the row
 
 public:
     enum FTTYPE{NO_FACTOR, FACTOR};
