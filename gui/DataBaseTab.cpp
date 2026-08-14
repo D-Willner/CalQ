@@ -4,9 +4,13 @@
 #include <QLabel>
 #include "RecipeDialog.h"
 #include "ToolTipLabel.h"
+#include <QMessageBox>
+#include <QThread>
 
 DataBaseTab::DataBaseTab(DataBase& db, QWidget* parent) : QWidget(parent), database(db)
 {
+	client = new Client(this);
+
 	food_type_table = new FoodTable(5);
 	food_type_table->set_name_editable(false);
 	recipe_table = new FoodTable(5);
@@ -18,6 +22,40 @@ DataBaseTab::DataBaseTab(DataBase& db, QWidget* parent) : QWidget(parent), datab
 
 	exercise_table = new ExerciseTable(5);
 	exercise_table->set_name_editable(false);
+
+	AI_search_name = new QLineEdit;
+	AI_search_name->setMinimumWidth(200);
+
+	AI_search_result = new FoodTable(1);
+	AI_search_result->set_editable(true);
+
+	AI_model_list = new QComboBox;
+	AI_model_list->setMinimumWidth(100);
+	//AI_model_list->
+
+	QLabel* AI_label = new QLabel("AI Search:");
+	//AI_label->setFrameShape(QFrame::Panel);
+	//AI_label->setFrameShadow(QFrame::Sunken);
+	//AI_label->setLineWidth(2);
+	AI_label->setStyleSheet("QLabel{border-style: solid; border-width: 2px; border-color: black; padding: 2px; border-radius: 5px; color: black;}");
+
+	QPushButton* AI_search_btn = new QPushButton("Ask");
+	QPushButton* AI_add_btn = new QPushButton("Add");
+	QPushButton* AI_model_update_btn = new QPushButton("Update");
+	QPushButton* AI_start_server_btn = new QPushButton("Start server");
+	QPushButton* AI_config_btn = new QPushButton("Configure");
+
+	QHBoxLayout* layout_AI_search = new QHBoxLayout;
+	layout_AI_search->addWidget(AI_search_name);
+	layout_AI_search->addWidget(AI_search_btn, 1, Qt::AlignLeft);
+	layout_AI_search->addWidget(new QLabel("Select model:"), 0, Qt::AlignRight);
+	layout_AI_search->addWidget(AI_model_list, 0, Qt::AlignRight);
+	layout_AI_search->addWidget(AI_model_update_btn, 0, Qt::AlignRight);
+
+	QHBoxLayout* layout_AI_bottom= new QHBoxLayout;
+	layout_AI_bottom->addWidget(AI_add_btn,1,Qt::AlignLeft);
+	layout_AI_bottom->addWidget(AI_start_server_btn, 0, Qt::AlignRight);
+	layout_AI_bottom->addWidget(AI_config_btn, 0, Qt::AlignRight);
 
 	QVBoxLayout* layout_left = new QVBoxLayout;
 
@@ -38,16 +76,20 @@ Remove them by pressing the \"-\" button.", "Meals:"), 0, Qt::AlignLeft);
 	layout_right->addWidget(new ToolTipLabel("Displays all the exercises in the database.\n\
 Modify them by changing the values.\n\
 Remove them by pressing the \"-\" button.", "Exercises:"), 0, Qt::AlignLeft | Qt::AlignTop);
-	layout_right->addWidget(exercise_table,1, Qt::AlignRight | Qt::AlignTop);
+	layout_right->addWidget(exercise_table,1, Qt::AlignLeft | Qt::AlignTop);
+	layout_right->addWidget(AI_label);
+	layout_right->addLayout(layout_AI_search);
+	layout_right->addWidget(AI_search_result);
+	layout_right->addLayout(layout_AI_bottom,1);
 
 	QHBoxLayout* layout = new QHBoxLayout;
 
 	layout->addLayout(layout_left,1);
+	layout->addSpacing(50);
 	layout->addLayout(layout_right);
 
 	setLayout(layout);
 
-	//load_tables();
 	QObject::connect(food_type_table, &FoodTable::food_removed,
 		this, [=](const Food& f) {database.remove_foodtype(f.name());});
 	QObject::connect(recipe_table, &FoodTable::food_removed,
@@ -60,6 +102,25 @@ Remove them by pressing the \"-\" button.", "Exercises:"), 0, Qt::AlignLeft | Qt
 	QObject::connect(food_type_table, &FoodTable::cellChanged, this, &DataBaseTab::handle_ft_change);
 	QObject::connect(recipe_table, &FoodTable::cellDoubleClicked, this, &DataBaseTab::handle_rec_change);
 
+	QObject::connect(AI_start_server_btn, &QPushButton::clicked, this, &DataBaseTab::LMS_server_start);
+	//QObject::connect(AI_start_server_btn, &QPushButton::clicked, this, &DataBaseTab::LMS_server_running_dispatch);
+
+	QObject::connect(AI_model_update_btn, &QPushButton::clicked, client, &Client::request_models);
+	QObject::connect(client, &Client::models, this, &DataBaseTab::update_models);
+
+	QObject::connect(AI_search_btn, &QPushButton::clicked, 
+		this, [&](){
+			client->request_food_data(AI_search_name->text().toStdString());
+	});
+	QObject::connect(client, &Client::food_data, this, &DataBaseTab::handle_food_arrival);
+
+	QObject::connect(AI_model_list, &QComboBox::currentTextChanged,
+		this, [&](const QString& qs) {
+			client->set_model_name(last_models[qs.toStdString()]);
+	});
+
+	QObject::connect(AI_add_btn, &QPushButton::clicked, this, &DataBaseTab::AI_add_food);
+	
 	setFocusPolicy(Qt::ClickFocus);
 }
 
@@ -99,6 +160,78 @@ void DataBaseTab::handle_rec_change(int row, int col)
 	rd->show();
 }
 
+void DataBaseTab::AI_add_food()
+{
+	if (AI_search_result->has_food(0)) {
+		database.overwrite(AI_search_result->read_food(0).food_type());
+		AI_search_result->clear_table();
+
+		food_type_table->clear_table();	//	Could be more efficient 
+		load_food_types();
+	}
+}
+
+//	hangs maybe create different thread or look for better solution
+bool DataBaseTab::LMS_server_start()
+{
+	qp = new QProcess();
+	qp->setProgram("lms");
+	qp->setArguments({ "server", "start" });
+	qp->start();
+	qp->waitForFinished();
+	QString qs(qp->readAllStandardError());
+
+	delete qp;
+	qp = nullptr;
+
+	return true;
+}
+
+//	TODO
+void DataBaseTab::LMS_server_running_dispatch()
+{
+	qp = new QProcess();
+	QObject::connect(qp, &QProcess::finished,
+		this, [&](int res, QProcess::ExitStatus status) {LMS_server_running_result(qp, res, status);});
+	qp->setProgram("lms");
+	qp->setArguments({ "server", "start" });
+	qp->start();
+	qp->waitForFinished();
+}
+
+bool DataBaseTab::LMS_server_running_result(QProcess* qp, int res, QProcess::ExitStatus status)
+{
+	//QThread::msleep(1000);
+	auto ba = qp->readAllStandardError();
+	//QString str = QString::fromUtf8(qp->readLine());
+	//while (qp->canReadLine()) {
+	//	str = QString::fromUtf8(qp->readLine());
+	//}
+	QString str = QString::fromUtf8(ba);
+	
+	//QString res(ba);
+	delete qp;
+	qp = nullptr;
+	QMessageBox* mb = new QMessageBox(QMessageBox::NoIcon, "Result", str);
+	mb->show();
+	return true;
+}
+
+void DataBaseTab::update_models(const std::vector<std::pair<std::string, std::string>>& models)
+{
+	AI_model_list->clear();
+	last_models.clear();
+	for (const auto& p : models) {
+		AI_model_list->addItem(QString::fromStdString(p.first));
+		last_models[p.first] = p.second;
+	}
+}
+
+void DataBaseTab::handle_food_arrival(const FoodType& ft)
+{
+	AI_search_result->clear_table();
+	AI_search_result->add_food(Food(ft, ft.get_size()));
+}
 
 void DataBaseTab::load_tables()
 {

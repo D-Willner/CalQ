@@ -29,9 +29,6 @@ public:
 	const std::string& get_server_address();
 	void set_server_address(const std::string& address);
 
-	//	returns false and does not request if another request is currently being processed
-	bool request_models();
-	bool request_food_data(const std::string& name);
 
 signals:
 	//	list of models currently registered by LMStudio
@@ -46,6 +43,10 @@ public slots:
 	void models_received();
 
 	void food_data_received();
+
+	//	returns false and does not request if another request is currently being processed
+	bool request_models();
+	bool request_food_data(const std::string& name);
 
 public slots:
 	void send_request(const QString& qs);

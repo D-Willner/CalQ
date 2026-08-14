@@ -9,12 +9,16 @@ QDate Settings::get_starting_date() const { return starting_date; }
 CAL_T Settings::get_calorie_target() const { return calorie_target; }
 CAL_T Settings::get_cal_burn() const { return cal_burn_daily; }
 
+bool Settings::is_enabled_AI() const { return AI_enabled; }
+
 void Settings::set_target_weight(BODYWEIGHT_T w) { target_weight = w; }
 void Settings::set_starting_weight(BODYWEIGHT_T w) { starting_weight = w; }
 void Settings::set_starting_date(QDate qd) { starting_date = qd; }
 
 void Settings::set_calorie_target(CAL_T c) { calorie_target = c; }
 void Settings::set_cal_burn(CAL_T c) { cal_burn_daily = c; }
+
+void Settings::enable_AI(bool en) { AI_enabled = en; }
 
 QJsonObject Settings::to_json() const
 {
@@ -25,6 +29,7 @@ QJsonObject Settings::to_json() const
 	jo["starting_date"] = starting_date.toString();
 	jo["calorie_target"] = calorie_target;
 	jo["cal_burn_daily"] = cal_burn_daily;
+	jo["AI_enabled"] = AI_enabled;
 
 	return jo;
 }
@@ -38,6 +43,7 @@ Settings Settings::from_json(const QJsonObject& jo)
 	s.starting_date = QDate::fromString(jo["starting_date"].toString(QDate::currentDate().toString()));
 	s.calorie_target = jo["calorie_target"].toDouble(0.0);
 	s.cal_burn_daily = jo["cal_burn_daily"].toDouble(0.0);
+	s.AI_enabled = jo["AI_enabled"].toBool(true);
 
 	return s;
 }

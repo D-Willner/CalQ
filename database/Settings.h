@@ -16,6 +16,8 @@ private:
 	CAL_T calorie_target;
 	CAL_T cal_burn_daily;
 
+	bool AI_enabled;
+
 	Settings() = default;
 public:
 
@@ -25,6 +27,8 @@ public:
 
 	CAL_T get_calorie_target() const;
 	CAL_T get_cal_burn() const;
+
+	bool is_enabled_AI() const;
 	
 	void set_target_weight(BODYWEIGHT_T w);
 	void set_starting_weight(BODYWEIGHT_T w);
@@ -33,10 +37,11 @@ public:
 	void set_calorie_target(CAL_T c);
 	void set_cal_burn(CAL_T c);
 
+	void enable_AI(bool);
+
 	static Settings from_json(const QJsonObject& jo);
 	QJsonObject to_json() const;
 
-	//	maybe should be somewhere else
 	static Settings load();
 	bool save() const;
 

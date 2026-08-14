@@ -3,6 +3,7 @@
 #include <QPushButton>
 #include <QSpinBox>
 #include <QDoubleSpinBox>
+#include <QCheckBox>
 #include "database/Settings.h"
 
 class SettingsTab :
@@ -17,6 +18,8 @@ private:
 
     QSpinBox* calorie_target_sb;
     QSpinBox* cal_burn_daily_sb;
+
+    QCheckBox* AI_enable_box;
 
     QPushButton* initialize_btn;
 

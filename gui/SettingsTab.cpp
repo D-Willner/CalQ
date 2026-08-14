@@ -21,6 +21,9 @@ SettingsTab::SettingsTab(Settings& s, QWidget* parent) : QWidget(parent), settin
 	cal_burn_daily_sb->setRange(0, 10000);
 	cal_burn_daily_sb->setValue(s.get_cal_burn());
 
+	AI_enable_box = new QCheckBox;
+	AI_enable_box->setCheckState(s.is_enabled_AI() ? Qt::Checked : Qt::Unchecked);
+
 	accept_btn = new QPushButton("Accept");
 	deny_btn = new QPushButton("Cancel");
 
@@ -29,6 +32,7 @@ SettingsTab::SettingsTab(Settings& s, QWidget* parent) : QWidget(parent), settin
 	form_layout->addRow("Starting Weight:", starting_weight_sb);
 	form_layout->addRow("Calorie Target:", calorie_target_sb);
 	form_layout->addRow("Daily calories burned:", cal_burn_daily_sb);
+	form_layout->addRow("Enable AI search:", AI_enable_box);
 
 	QHBoxLayout* form_upper_layout = new QHBoxLayout;
 	form_upper_layout->addLayout(form_layout);
@@ -57,6 +61,7 @@ void SettingsTab::set()
 	settings.set_starting_weight(starting_weight_sb->value());
 	settings.set_calorie_target(calorie_target_sb->value());
 	settings.set_cal_burn(cal_burn_daily_sb->value());
+	settings.enable_AI(AI_enable_box->checkState() == Qt::Checked);
 }
 
 void SettingsTab::fetch()
@@ -65,4 +70,5 @@ void SettingsTab::fetch()
 	starting_weight_sb->setValue(settings.get_starting_weight());
 	calorie_target_sb->setValue(settings.get_calorie_target());
 	cal_burn_daily_sb->setValue(settings.get_cal_burn());
+	AI_enable_box->setCheckState(settings.is_enabled_AI() ? Qt::Checked : Qt::Unchecked);
 }

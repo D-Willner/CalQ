@@ -43,7 +43,7 @@ const std::string& Client::get_instruction() { return instruction; }
 void Client::set_instruction(const std::string& inst) { instruction = inst; }
 
 const std::string& Client::get_model_name() { return model_name; }
-void Client::set_model_name(const std::string& name) { model_name = name; }
+void Client::set_model_name(const std::string& name) { if (name != "") model_name = name; }
 
 const std::string& Client::get_server_address() { return server_address; }
 void Client::set_server_address(const std::string& address) { server_address = address; }
@@ -101,7 +101,7 @@ void Client::models_received()
 	reply->deleteLater();
 	reply = nullptr;
 
-
+	if (doc.isEmpty()) return;	//	No connection possible
 	if (!doc.isObject()) throw new std::exception("Wrong Json format when reading models");
 	QJsonObject jo = doc.object();
 
@@ -180,7 +180,7 @@ void Client::food_data_received()
 	if (food_obj.contains("fats") && food_obj["fats"].isDouble())
 		fats = food_obj["fats"].toDouble();
 
-	emit food_data(FoodType(requested_name,cals,100,prot,carbs,fats));
+	emit food_data(FoodType(requested_name,cals,prot,carbs,fats,100));
 }
 
 // bad, only one request at a time otherwise bug
