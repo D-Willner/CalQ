@@ -28,5 +28,7 @@ int main(int argc, char *argv[])
 /* TODO:    README
             add InitializeDialog
             SQL database
-            local AI query for food information
+            add ai photo recognition
+            add ai configure dialog and more options
+            improve visuals (style sheets and frames)
 */

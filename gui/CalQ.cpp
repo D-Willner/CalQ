@@ -27,6 +27,14 @@ CalQ::CalQ(DataBase& db, Settings& s, QWidget* parent)
 
     QObject::connect(tabs, &QTabWidget::currentChanged,
         this, [=](int index) { if (index == tabs->indexOf(database_tab)) database_tab->update_tables(); });
+
+    QObject::connect(tabs, &QTabWidget::currentChanged,
+        this, [=](int index) {
+            if (index == tabs->indexOf(database_tab) && settings.is_enabled_AI()) {
+                database_tab->LMS_server_running_dispatch();
+                database_tab->fetch_models();
+            }
+    });
 }
 
 CalQ::~CalQ()

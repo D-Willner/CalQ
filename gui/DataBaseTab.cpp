@@ -42,7 +42,7 @@ DataBaseTab::DataBaseTab(DataBase& db, QWidget* parent) : QWidget(parent), datab
 	QPushButton* AI_search_btn = new QPushButton("Ask");
 	QPushButton* AI_add_btn = new QPushButton("Add");
 	QPushButton* AI_model_update_btn = new QPushButton("Update");
-	QPushButton* AI_start_server_btn = new QPushButton("Start server");
+	AI_start_server_btn = new QPushButton("Start server");
 	QPushButton* AI_config_btn = new QPushButton("Configure");
 
 	QHBoxLayout* layout_AI_search = new QHBoxLayout;
@@ -102,8 +102,13 @@ Remove them by pressing the \"-\" button.", "Exercises:"), 0, Qt::AlignLeft | Qt
 	QObject::connect(food_type_table, &FoodTable::cellChanged, this, &DataBaseTab::handle_ft_change);
 	QObject::connect(recipe_table, &FoodTable::cellDoubleClicked, this, &DataBaseTab::handle_rec_change);
 
-	QObject::connect(AI_start_server_btn, &QPushButton::clicked, this, &DataBaseTab::LMS_server_start);
-	//QObject::connect(AI_start_server_btn, &QPushButton::clicked, this, &DataBaseTab::LMS_server_running_dispatch);
+	QObject::connect(AI_start_server_btn, &QPushButton::clicked, 
+		this, [&]() {
+			bool to_start = AI_start_server_btn->text() == "Start server";
+			LMS_server_manage(to_start ? START_SERVER : STOP_SERVER);
+			//AI_start_server_btn->setText(to_start ? "Stop" : "Start");	
+			update_AI_start_btn();	//	only works because server_manage hangs until complete
+	});
 
 	QObject::connect(AI_model_update_btn, &QPushButton::clicked, client, &Client::request_models);
 	QObject::connect(client, &Client::models, this, &DataBaseTab::update_models);
@@ -120,8 +125,20 @@ Remove them by pressing the \"-\" button.", "Exercises:"), 0, Qt::AlignLeft | Qt
 	});
 
 	QObject::connect(AI_add_btn, &QPushButton::clicked, this, &DataBaseTab::AI_add_food);
-	
+	QObject::connect(AI_add_btn, &QPushButton::clicked, AI_search_name, &QLineEdit::clear);
+
+	QObject::connect(this, &DataBaseTab::server_running,
+		this, [&](bool is_running) {
+			AI_start_server_btn->setText(is_running ? "Stop server" : "Start server");
+	});
+	update_AI_start_btn();
+
 	setFocusPolicy(Qt::ClickFocus);
+}
+
+void DataBaseTab::fetch_models()
+{
+	client->request_models();
 }
 
 void DataBaseTab::handle_ft_change(int row, int col)
@@ -171,15 +188,13 @@ void DataBaseTab::AI_add_food()
 	}
 }
 
-//	hangs maybe create different thread or look for better solution
-bool DataBaseTab::LMS_server_start()
+bool DataBaseTab::LMS_server_manage(SERVER_OP op)
 {
-	qp = new QProcess();
+	QProcess* qp = new QProcess;
 	qp->setProgram("lms");
-	qp->setArguments({ "server", "start" });
+	qp->setArguments({ "server", op == START_SERVER ? "start" : "stop"});
 	qp->start();
-	qp->waitForFinished();
-	QString qs(qp->readAllStandardError());
+	qp->waitForFinished();	//	maybe better this way
 
 	delete qp;
 	qp = nullptr;
@@ -187,34 +202,58 @@ bool DataBaseTab::LMS_server_start()
 	return true;
 }
 
-//	TODO
+//	pointless, kind of
+void DataBaseTab::update_AI_start_btn()
+{
+	LMS_server_running_dispatch();
+}
+
+bool DataBaseTab::LMS_server_running()
+{
+	QProcess* qp = new QProcess;
+	qp->setProgram("lms");
+	qp->setArguments({ "server", "status" });
+	qp->start();
+	qp->waitForFinished();
+	
+	auto ba = qp->readAllStandardError();
+	QString str = QString::fromUtf8(ba);
+
+	delete qp;
+	qp = nullptr;
+
+	if (str.contains("The server is running on")) {
+		emit server_running(true);
+		return true;
+	}
+	else if (str.contains("The server is not running")) {
+		emit server_running(false);
+	}
+	return false;
+}
+
 void DataBaseTab::LMS_server_running_dispatch()
 {
-	qp = new QProcess();
+	QProcess* qp = new QProcess();
 	QObject::connect(qp, &QProcess::finished,
-		this, [&](int res, QProcess::ExitStatus status) {LMS_server_running_result(qp, res, status);});
+		this, [=](int res, QProcess::ExitStatus status) {LMS_server_running_result(qp);});
 	qp->setProgram("lms");
-	qp->setArguments({ "server", "start" });
+	qp->setArguments({ "server", "status" });
 	qp->start();
-	qp->waitForFinished();
 }
 
-bool DataBaseTab::LMS_server_running_result(QProcess* qp, int res, QProcess::ExitStatus status)
+void DataBaseTab::LMS_server_running_result(QProcess* qp)
 {
-	//QThread::msleep(1000);
 	auto ba = qp->readAllStandardError();
-	//QString str = QString::fromUtf8(qp->readLine());
-	//while (qp->canReadLine()) {
-	//	str = QString::fromUtf8(qp->readLine());
-	//}
 	QString str = QString::fromUtf8(ba);
 	
-	//QString res(ba);
 	delete qp;
 	qp = nullptr;
-	QMessageBox* mb = new QMessageBox(QMessageBox::NoIcon, "Result", str);
-	mb->show();
-	return true;
+	//QMessageBox* mb = new QMessageBox(QMessageBox::NoIcon, "Result", str);
+	//mb->show();
+
+	if (str.contains("The server is not running")) emit server_running(false);
+	else if (str.contains("The server is running on")) emit server_running(true);
 }
 
 void DataBaseTab::update_models(const std::vector<std::pair<std::string, std::string>>& models)

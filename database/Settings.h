@@ -17,6 +17,8 @@ private:
 	CAL_T cal_burn_daily;
 
 	bool AI_enabled;
+	std::string last_model;
+	bool auto_load_last_model;
 
 	Settings() = default;
 public:
