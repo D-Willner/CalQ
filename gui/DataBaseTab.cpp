@@ -196,8 +196,7 @@ bool DataBaseTab::LMS_server_manage(SERVER_OP op)
 	qp->start();
 	qp->waitForFinished();	//	maybe better this way
 
-	delete qp;
-	qp = nullptr;
+	qp->deleteLater();
 
 	return true;
 }
@@ -219,8 +218,7 @@ bool DataBaseTab::LMS_server_running()
 	auto ba = qp->readAllStandardError();
 	QString str = QString::fromUtf8(ba);
 
-	delete qp;
-	qp = nullptr;
+	qp->deleteLater();
 
 	if (str.contains("The server is running on")) {
 		emit server_running(true);
@@ -246,9 +244,8 @@ void DataBaseTab::LMS_server_running_result(QProcess* qp)
 {
 	auto ba = qp->readAllStandardError();
 	QString str = QString::fromUtf8(ba);
-	
-	delete qp;
-	qp = nullptr;
+
+	qp->deleteLater();
 	//QMessageBox* mb = new QMessageBox(QMessageBox::NoIcon, "Result", str);
 	//mb->show();
 
