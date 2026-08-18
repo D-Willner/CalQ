@@ -1,8 +1,8 @@
 #include "CalQ.h"
 #include <QDir>
 
-CalQ::CalQ(DataBase& db, Settings& s, QWidget* parent)
-    : QWidget(parent), database(db), settings(s)
+CalQ::CalQ(DataBase& db, SQLDatabase& sql_db, Settings& s, QWidget* parent)
+    : QWidget(parent), database(db), sql_database(sql_db), settings(s)
 { 
     //setGeometry(0, 0, 800, 600);
 
@@ -10,14 +10,14 @@ CalQ::CalQ(DataBase& db, Settings& s, QWidget* parent)
 
     tabs = new QTabWidget(this);
     main_tab = new MainTab(database, settings);
-    database_tab = new DataBaseTab(database);
+    database_tab = new DataBaseTab(database, sql_database);
     history_tab = new HistoryTab(database, settings);
     settings_tab = new SettingsTab(settings);
     
     //tabs->setMinimumSize(600, 600);
 
     tabs->addTab(main_tab, "Main");
-    tabs->addTab(database_tab, "Database");
+    tabs->addTab(database_tab, "Database"); 
     tabs->addTab(history_tab, "History");
     tabs->addTab(settings_tab, "Settings");
 

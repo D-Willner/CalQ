@@ -1,13 +1,19 @@
-#include "SQL_database.h"
+#include "SQLDatabase.h"
 
 
-SQL_database::SQL_database(std::string db_name, std::string db_driver, std::string address, std::string port) 
+SQLDatabase::SQLDatabase(std::string db_name, std::string db_driver, std::string address, std::string port) 
 	: database_name(db_name), database_driver(db_driver), server_address(address), server_port(port)
 {
 	//	maybe connect here, probably not
 }
 
-bool SQL_database::connect(std::string db_name, std::string address)
+SQLDatabase::SQLDatabase(const SQLDatabase& other)
+	: qsql_database(other.qsql_database), database_name(other.database_name), 
+	database_driver(other.database_driver), server_address(other.server_address), 
+	server_port(other.server_port)
+{}
+
+bool SQLDatabase::connect(std::string db_name, std::string address)
 {
 	qsql_database = QSqlDatabase::addDatabase(QString::fromStdString(database_driver));
 
@@ -21,16 +27,16 @@ bool SQL_database::connect(std::string db_name, std::string address)
 	return qsql_database.open();
 }
 
-bool SQL_database::connect(std::string db_name) { return connect(db_name, server_address); }
+bool SQLDatabase::connect(std::string db_name) { return connect(db_name, server_address); }
 
-bool SQL_database::connect() { return connect(database_name, server_address); }
+bool SQLDatabase::connect() { return connect(database_name, server_address); }
 
-bool SQL_database::is_connected()
+bool SQLDatabase::is_connected()
 {
 	return qsql_database.isOpen();
 }
 
-bool SQL_database::initialize_db()
+bool SQLDatabase::initialize_db()
 {
 	
 	QSqlQuery check_query;
@@ -51,7 +57,7 @@ bool SQL_database::initialize_db()
 	));
 }
 
-bool SQL_database::disconnect()
+bool SQLDatabase::disconnect()
 {
 	qsql_database.close();
 	return true;
@@ -68,7 +74,7 @@ std::string SQL_database::key_from_type(const T&)
 }
 */
 
-void SQL_database::set_key(SQL_KEY key, std::string key_value)
+void SQLDatabase::set_key(SQL_KEY key, std::string key_value)
 {
 	switch (key) {
 	case FOODTYPE_TABLE_KEY: 
@@ -95,7 +101,7 @@ void SQL_database::set_key(SQL_KEY key, std::string key_value)
 	}
 }
 
-std::string SQL_database::get_key(SQL_KEY key)
+std::string SQLDatabase::get_key(SQL_KEY key)
 {
 	switch (key) {
 	case FOODTYPE_TABLE_KEY: return foodtype_table_key;
@@ -132,7 +138,7 @@ DataBase::DTYPE SQL_database::contains(std::string name)
 }
 */
 
-std::vector<std::string> SQL_database::driver_list()
+std::vector<std::string> SQLDatabase::driver_list()
 {
 	QStringList qsl = QSqlDatabase::drivers();
 	std::vector<std::string> ret;
@@ -141,7 +147,7 @@ std::vector<std::string> SQL_database::driver_list()
 	return ret;
 }
 
-bool SQL_database::contains(std::string name)
+bool SQLDatabase::contains(std::string name)
 {
 	QSqlQuery q;
 	bool executed = q.exec("SELECT NAME FROM " + QString::fromStdString(foodtype_table_key)
@@ -149,12 +155,12 @@ bool SQL_database::contains(std::string name)
 	return executed && q.size() > 0;
 }
 
-bool SQL_database::contains(const FoodType& ft)
+bool SQLDatabase::contains(const FoodType& ft)
 {
 	return contains(ft.name());
 }
 
-FoodType SQL_database::get(std::string name)
+FoodType SQLDatabase::get(std::string name)
 {
 	QSqlQuery q;
 	bool executed = q.exec(QString::fromStdString("SELECT " + name_key + ", " + cal_key + ", " + prot_key + ", " + carb_key
@@ -173,7 +179,7 @@ FoodType SQL_database::get(std::string name)
 	return FoodType(nm, cals, prot, carbs, fats, size);
 }
 
-std::vector<FoodType> SQL_database::all_foodtypes()
+std::vector<FoodType> SQLDatabase::all_foodtypes()
 {
 	QSqlQuery q;
 	bool executed = q.exec(QString::fromStdString("SELECT " + name_key + ", " + cal_key + ", " + prot_key + ", " + carb_key + ", " + fat_key + ", " + size_key
@@ -195,7 +201,7 @@ std::vector<FoodType> SQL_database::all_foodtypes()
 	return ret;
 }
 
-bool SQL_database::add(const FoodType& ft)
+bool SQLDatabase::add(const FoodType& ft)
 {
 	if (contains(ft)) return false;
 
@@ -219,7 +225,7 @@ bool SQL_database::add(const FoodType& ft)
 	return executed;
 }
 
-int SQL_database::add(const std::vector<FoodType>& vec)
+int SQLDatabase::add(const std::vector<FoodType>& vec)
 {
 	int sum = 0;
 	for (const FoodType& ft : vec) {
@@ -228,7 +234,7 @@ int SQL_database::add(const std::vector<FoodType>& vec)
 	return sum;
 }
 
-bool SQL_database::update(const FoodType& ft)
+bool SQLDatabase::update(const FoodType& ft)
 {
 	if (!contains(ft)) return add(ft);
 	else {
@@ -248,7 +254,7 @@ bool SQL_database::update(const FoodType& ft)
 
 }
 
-int SQL_database::update(const std::vector<FoodType>& vec)
+int SQLDatabase::update(const std::vector<FoodType>& vec)
 {
 	int sum = 0;
 	for (const FoodType& ft : vec) {
@@ -257,7 +263,7 @@ int SQL_database::update(const std::vector<FoodType>& vec)
 	return sum;
 }
 
-bool SQL_database::remove(std::string name)
+bool SQLDatabase::remove(std::string name)
 {
 	QSqlQuery q;
 	bool executed = q.exec(QString::fromStdString(

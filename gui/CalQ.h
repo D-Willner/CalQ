@@ -9,6 +9,7 @@
 #include "DataBaseTab.h"
 #include "HistoryTab.h"
 #include "SettingsTab.h"
+#include "network/SQLDatabase.h"
 
 class CalQ : public QWidget
 {
@@ -27,10 +28,11 @@ private:
     QVBoxLayout* layout;
 
     DataBase& database;
+	SQLDatabase sql_database;
     Settings& settings;
 
 public:
-    CalQ(DataBase& db, Settings& s, QWidget *parent = nullptr);
+    CalQ(DataBase& db, SQLDatabase& sql_db, Settings& s, QWidget *parent = nullptr);
     ~CalQ();
 
 };

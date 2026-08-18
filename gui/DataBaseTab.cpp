@@ -7,7 +7,7 @@
 #include <QMessageBox>
 #include <QThread>
 
-DataBaseTab::DataBaseTab(DataBase& db, QWidget* parent) : QWidget(parent), database(db)
+DataBaseTab::DataBaseTab(DataBase& db, SQLDatabase& sql_db, QWidget* parent) : QWidget(parent), database(db), sql_database(sql_db)
 {
 	client = new Client(this);
 
@@ -23,6 +23,42 @@ DataBaseTab::DataBaseTab(DataBase& db, QWidget* parent) : QWidget(parent), datab
 	exercise_table = new ExerciseTable(5);
 	exercise_table->set_name_editable(false);
 
+	ToolTipLabel* SQL_label = new ToolTipLabel("Search for food types in the SQL database.\nManage and configure the database.", "SQL Database:");
+	SQL_label->setStyleSheet("QFrame{border-style: solid; border-width: 2px; border-color: black; padding: 0px; border-radius: 5px; color: black; background-color: lightgray; margin-top: 5px;}\
+							QLabel{border-style: none; margin: 0px; border-width: 0px; padding: 0px; border-radius: 0px; color: black;}");
+
+	SQL_search_name = new QLineEdit;
+	SQL_search_name->setMinimumWidth(200);
+	SQL_search_name->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+
+	SQL_search_btn = new QPushButton("Search");
+	SQL_search_btn->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+
+	SQL_search_results = new QListWidget;
+	SQL_search_results->setMinimumWidth(400);
+
+	SQL_search_selection = new FoodTable(1);
+	SQL_search_selection->set_editable(false);
+
+	QPushButton* SQL_add_btn = new QPushButton("Add");
+	QPushButton* SQL_configure_btn = new QPushButton("Configure");
+
+	QVBoxLayout* layout_SQL = new QVBoxLayout;
+
+	QHBoxLayout* layout_SQL_search = new QHBoxLayout;
+	layout_SQL_search->addWidget(SQL_search_name,0, Qt::AlignLeft);
+	layout_SQL_search->addWidget(SQL_search_btn,1,Qt::AlignLeft);
+
+	QHBoxLayout* layout_SQL_bottom = new QHBoxLayout;
+	layout_SQL_bottom->addWidget(SQL_add_btn, 1, Qt::AlignLeft);
+	layout_SQL_bottom->addWidget(SQL_configure_btn, 0, Qt::AlignLeft);
+
+	layout_SQL->addWidget(SQL_label);
+	layout_SQL->addLayout(layout_SQL_search);
+	layout_SQL->addWidget(SQL_search_results,0,Qt::AlignLeft);
+	layout_SQL->addWidget(SQL_search_selection,0,Qt::AlignLeft);
+	layout_SQL->addLayout(layout_SQL_bottom);
+
 	AI_search_name = new QLineEdit;
 	AI_search_name->setMinimumWidth(200);
 
@@ -33,11 +69,12 @@ DataBaseTab::DataBaseTab(DataBase& db, QWidget* parent) : QWidget(parent), datab
 	AI_model_list->setMinimumWidth(100);
 	//AI_model_list->
 
-	QLabel* AI_label = new QLabel("AI Search:");
+	ToolTipLabel* AI_label = new ToolTipLabel("Search for foods using AI.\nConfigure and manage the AI model.", "AI Search:");
 	//AI_label->setFrameShape(QFrame::Panel);
 	//AI_label->setFrameShadow(QFrame::Sunken);
 	//AI_label->setLineWidth(2);
-	AI_label->setStyleSheet("QLabel{border-style: solid; border-width: 2px; border-color: black; padding: 2px; border-radius: 5px; color: black;}");
+	AI_label->setStyleSheet("QFrame{border-style: solid; border-width: 2px; border-color: black; padding: 0px; border-radius: 5px; color: black; background-color: lightgray; margin-top: 5px;}\
+							QLabel{border-style: none; margin: 0px; border-width: 0px; padding: 0px; border-radius: 0px; color: black;}");
 
 	QPushButton* AI_search_btn = new QPushButton("Ask");
 	QPushButton* AI_add_btn = new QPushButton("Add");
@@ -73,14 +110,16 @@ Remove them by pressing the \"-\" button.", "Meals:"), 0, Qt::AlignLeft);
 
 	QVBoxLayout* layout_right = new QVBoxLayout;
 
+
 	layout_right->addWidget(new ToolTipLabel("Displays all the exercises in the database.\n\
 Modify them by changing the values.\n\
 Remove them by pressing the \"-\" button.", "Exercises:"), 0, Qt::AlignLeft | Qt::AlignTop);
-	layout_right->addWidget(exercise_table,1, Qt::AlignLeft | Qt::AlignTop);
+	layout_right->addWidget(exercise_table,0, Qt::AlignLeft | Qt::AlignTop);
+	layout_right->addLayout(layout_SQL, 1);
 	layout_right->addWidget(AI_label);
 	layout_right->addLayout(layout_AI_search);
 	layout_right->addWidget(AI_search_result);
-	layout_right->addLayout(layout_AI_bottom,1);
+	layout_right->addLayout(layout_AI_bottom);
 
 	QHBoxLayout* layout = new QHBoxLayout;
 

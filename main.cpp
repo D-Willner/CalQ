@@ -10,28 +10,29 @@
 #include <QSqlDatabase>
 #include <QSqlDriver>
 #include <QSqlQuery>
-#include "network/SQL_database.h"
-
+#include "network/SQLDatabase.h"
 
 int main(int argc, char *argv[])
 {
     DataBase db;
+	SQLDatabase sql_db("mydb");
     Settings s = Settings::load();
 
     QApplication app(argc, argv);
-    CalQ window(db,s);
+
+    sql_db.connect();
+    sql_db.initialize_db();
+
+    CalQ window(db, sql_db, s);
     window.show();
     
     QFile log("log.txt");
     bool file_ok = log.open(QFile::WriteOnly);
 
-    SQL_database sql_database("mydb");
-    sql_database.connect();
-    sql_database.initialize_db();
 
-    sql_database.add(db.get_foodtype("Apple"));
+    //sql_db.add(db.get_foodtype("Apple"));
 
-    FoodType ft = sql_database.get("Apple");
+    //FoodType ft = sql_db.get("Apple");
 
     //int written = log.write(qs.toUtf8());
     log.close();
@@ -42,7 +43,7 @@ int main(int argc, char *argv[])
 /* TODO:    README
             add InitializeDialog
             SQL database
-            add ai photo recognition(pointless since too bad still?)
+            add ai photo recognition(pointless since too bad still? maybe learn how to train ai for this?)
             add ai configure dialog and more options
             improve visuals (style sheets and frames)
 */

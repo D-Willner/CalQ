@@ -6,7 +6,7 @@
 #include "database/FoodType.h"
 #include "database/database.h"
 
-class SQL_database : public QObject	//	necessary?
+class SQLDatabase : public QObject	//	necessary?
 {
 	Q_OBJECT
 
@@ -81,7 +81,8 @@ public:
 
 	static std::vector<std::string> driver_list();
 
-	SQL_database(std::string db_name = "", std::string db_driver = "QPSQL", std::string address = "127.0.0.1", std::string port = "5432");
+	SQLDatabase(std::string db_name = "", std::string db_driver = "QPSQL", std::string address = "127.0.0.1", std::string port = "5432");
+	SQLDatabase(const SQLDatabase&);
 
 	bool connect(std::string db_name , std::string address);
 	bool connect(std::string db_name);
@@ -90,7 +91,6 @@ public:
 	bool is_connected();
 	bool initialize_db();
 	bool disconnect();
-
 
 	bool contains(std::string name);
 	bool contains(const FoodType&);

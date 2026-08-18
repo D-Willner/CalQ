@@ -5,8 +5,10 @@
 #include "database/DataBase.h"
 #include "AIConfigDialog.h"
 #include "network/client.h"
+#include "network/SQLDatabase.h"
 #include <QComboBox>
 #include <QProcess>
+#include <QListWidget>
 
 class DataBaseTab :
     public QWidget
@@ -15,6 +17,7 @@ class DataBaseTab :
 
 private:
     DataBase& database;
+    SQLDatabase& sql_database;
 
     //  key is display_name, stored data is model key for API
     std::map<std::string, std::string> last_models;
@@ -26,6 +29,11 @@ private:
     FoodTable* recipe_table;
     FoodTable* meal_table;
     ExerciseTable* exercise_table;
+
+	QLineEdit* SQL_search_name;
+	QPushButton* SQL_search_btn;
+	QListWidget* SQL_search_results;
+    FoodTable* SQL_search_selection;
 
     QLineEdit* AI_search_name;
     FoodTable* AI_search_result;
@@ -44,7 +52,7 @@ private:
     enum SERVER_OP{START_SERVER, STOP_SERVER};
 
 public:
-    explicit DataBaseTab(DataBase& db, QWidget* parent = nullptr);
+    explicit DataBaseTab(DataBase& db, SQLDatabase& sql_db, QWidget* parent = nullptr);
 
     void update_AI_start_btn();
     bool LMS_server_running();
