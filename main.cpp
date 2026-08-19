@@ -15,13 +15,13 @@
 int main(int argc, char *argv[])
 {
     DataBase db;
-	SQLDatabase sql_db("mydb");
     Settings s = Settings::load();
+	SQLDatabase sql_db(s.get_sql_settings());
 
     QApplication app(argc, argv);
 
-    sql_db.connect();
-    sql_db.initialize_db();
+    //sql_db.connect();
+    //sql_db.initialize_db();
 
     CalQ window(db, sql_db, s);
     window.show();

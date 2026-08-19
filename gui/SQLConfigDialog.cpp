@@ -52,18 +52,23 @@ SQLConfigDialog::SQLConfigDialog(SQLDatabase& sql_db, Settings& s, QWidget* pare
 
 	// Connect buttons
 	QObject::connect(accept_btn, &QPushButton::clicked, this, [=]() {
-		sql_database.set_database_name(db_name_edit->text().toStdString());
-		sql_database.set_server_address(host_edit->text().toStdString());
-		sql_database.set_server_port(port_edit->text().toStdString());
-		sql_database.set_database_driver(db_driver_edit->currentText().toStdString());
-		sql_database.set_key(SQLDatabase::FOODTYPE_TABLE_KEY, table_key_edit->text().toStdString());
-		sql_database.set_key(SQLDatabase::NAME_KEY, name_key_edit->text().toStdString());
-		sql_database.set_key(SQLDatabase::CAL_KEY, cal_key_edit->text().toStdString());
-		sql_database.set_key(SQLDatabase::PROT_KEY, prot_key_edit->text().toStdString());
-		sql_database.set_key(SQLDatabase::CARB_KEY, carb_key_edit->text().toStdString());
-		sql_database.set_key(SQLDatabase::FAT_KEY, fat_key_edit->text().toStdString());
-		sql_database.set_key(SQLDatabase::SIZE_KEY, size_key_edit->text().toStdString());
-		//settings.save_settings();
+		SQLSettings sql_settings;
+
+		sql_settings.set_key(SQLSettings::DATABASE_NAME_KEY, db_name_edit->text().toStdString());
+		sql_settings.set_key(SQLSettings::SERVER_ADDRESS_KEY, host_edit->text().toStdString());
+		sql_settings.set_key(SQLSettings::SERVER_PORT_KEY, port_edit->text().toStdString());
+		sql_settings.set_key(SQLSettings::DATABASE_DRIVER_KEY, db_driver_edit->currentText().toStdString());
+		sql_settings.set_key(SQLSettings::FOODTYPE_TABLE_KEY, table_key_edit->text().toStdString());
+		sql_settings.set_key(SQLSettings::NAME_KEY, name_key_edit->text().toStdString());
+		sql_settings.set_key(SQLSettings::CAL_KEY, cal_key_edit->text().toStdString());
+		sql_settings.set_key(SQLSettings::PROT_KEY, prot_key_edit->text().toStdString());
+		sql_settings.set_key(SQLSettings::CARB_KEY, carb_key_edit->text().toStdString());
+		sql_settings.set_key(SQLSettings::FAT_KEY, fat_key_edit->text().toStdString());
+		sql_settings.set_key(SQLSettings::SIZE_KEY, size_key_edit->text().toStdString());
+
+		sql_database.set_settings(sql_settings);
+		settings.set_sql_settings(sql_settings);
+		
 		this->accept();
 	});
 

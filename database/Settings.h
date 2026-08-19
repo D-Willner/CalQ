@@ -5,6 +5,7 @@
 #include "Foodtype.h"
 #include "ExerciseType.h"
 #include "WeightEntry.h"
+#include "network/SQLSettings.h"
 
 class Settings
 {
@@ -15,6 +16,8 @@ private:
 
 	CAL_T calorie_target;
 	CAL_T cal_burn_daily;
+
+	SQLSettings sql_settings;
 
 	bool AI_enabled;
 	std::string last_model;
@@ -30,6 +33,8 @@ public:
 	CAL_T get_calorie_target() const;
 	CAL_T get_cal_burn() const;
 
+	SQLSettings get_sql_settings() const;
+
 	bool is_enabled_AI() const;
 	
 	void set_target_weight(BODYWEIGHT_T w);
@@ -38,6 +43,8 @@ public:
 
 	void set_calorie_target(CAL_T c);
 	void set_cal_burn(CAL_T c);
+
+	void set_sql_settings(const SQLSettings& s);
 
 	void enable_AI(bool);
 

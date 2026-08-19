@@ -1,6 +1,21 @@
 #include "SQLDatabase.h"
 
 
+SQLDatabase::SQLDatabase(const SQLSettings& settings)
+	: SQLDatabase(settings.get_key(SQLSettings::DATABASE_NAME_KEY),
+		settings.get_key(SQLSettings::DATABASE_DRIVER_KEY),
+		settings.get_key(SQLSettings::SERVER_ADDRESS_KEY),
+		settings.get_key(SQLSettings::SERVER_PORT_KEY))
+{
+	set_key(FOODTYPE_TABLE_KEY, settings.get_key(SQLSettings::FOODTYPE_TABLE_KEY));
+	set_key(NAME_KEY, settings.get_key(SQLSettings::NAME_KEY));
+	set_key(CAL_KEY, settings.get_key(SQLSettings::CAL_KEY));
+	set_key(PROT_KEY, settings.get_key(SQLSettings::PROT_KEY));
+	set_key(CARB_KEY, settings.get_key(SQLSettings::CARB_KEY));
+	set_key(FAT_KEY, settings.get_key(SQLSettings::FAT_KEY));
+	set_key(SIZE_KEY, settings.get_key(SQLSettings::SIZE_KEY));
+}
+
 SQLDatabase::SQLDatabase(std::string db_name, std::string db_driver, std::string address, std::string port) 
 	: database_name(db_name), database_driver(db_driver), server_address(address), server_port(port)
 {
@@ -306,4 +321,39 @@ bool SQLDatabase::remove(std::string name)
 	));
 
 	return executed;
+}
+
+void SQLDatabase::set_settings(const SQLSettings& settings)
+{
+	server_address = settings.get_key(SQLSettings::SERVER_ADDRESS_KEY);
+	server_port = settings.get_key(SQLSettings::SERVER_PORT_KEY);
+	database_name = settings.get_key(SQLSettings::DATABASE_NAME_KEY);
+	database_driver = settings.get_key(SQLSettings::DATABASE_DRIVER_KEY);
+
+	foodtype_table_key = settings.get_key(SQLSettings::FOODTYPE_TABLE_KEY);
+	name_key = settings.get_key(SQLSettings::NAME_KEY);
+	cal_key = settings.get_key(SQLSettings::CAL_KEY);
+	prot_key = settings.get_key(SQLSettings::PROT_KEY);
+	carb_key = settings.get_key(SQLSettings::CARB_KEY);
+	fat_key = settings.get_key(SQLSettings::FAT_KEY);
+	size_key = settings.get_key(SQLSettings::SIZE_KEY);
+}
+
+SQLSettings SQLDatabase::get_settings() const
+{
+	SQLSettings ret;
+	ret.set_key(SQLSettings::SERVER_ADDRESS_KEY, server_address);
+	ret.set_key(SQLSettings::SERVER_PORT_KEY, server_port);
+	ret.set_key(SQLSettings::DATABASE_NAME_KEY, database_name);
+	ret.set_key(SQLSettings::DATABASE_DRIVER_KEY, database_driver);
+	
+	ret.set_key(SQLSettings::FOODTYPE_TABLE_KEY, foodtype_table_key);
+	ret.set_key(SQLSettings::NAME_KEY, name_key);
+	ret.set_key(SQLSettings::CAL_KEY, cal_key);
+	ret.set_key(SQLSettings::PROT_KEY, prot_key);
+	ret.set_key(SQLSettings::CARB_KEY, carb_key);
+	ret.set_key(SQLSettings::FAT_KEY, fat_key);
+	ret.set_key(SQLSettings::SIZE_KEY, size_key);
+
+	return ret;
 }

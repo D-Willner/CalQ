@@ -5,10 +5,9 @@
 #include <vector>
 #include "database/FoodType.h"
 #include "database/database.h"
+#include "SQLSettings.h"
 
-class SQLDatabase : public QObject	//	necessary?
-{
-	Q_OBJECT
+class SQLDatabase {
 
 private:
 	QSqlDatabase qsql_database;
@@ -19,8 +18,8 @@ private:
 	std::string database_driver;
 
 	std::string foodtype_table_key = "FOODTYPES";
-	std::string recipe_table_key = "RECIPES";
-	std::string meal_table_key = "MEALS";
+	//std::string recipe_table_key = "RECIPES";
+	//std::string meal_table_key = "MEALS";
 
 	std::string name_key = "NAME";
 	std::string cal_key = "CALS";
@@ -81,6 +80,7 @@ public:
 
 	static std::vector<std::string> driver_list();
 
+	SQLDatabase(const SQLSettings& settings);
 	SQLDatabase(std::string db_name = "", std::string db_driver = "QPSQL", std::string address = "127.0.0.1", std::string port = "5432");
 	SQLDatabase(const SQLDatabase&);
 
@@ -106,6 +106,9 @@ public:
 	int update(const std::vector<FoodType>&);
 
 	bool remove(std::string name);
+
+	void set_settings(const SQLSettings& settings);
+	SQLSettings get_settings() const;
 
 
 	//	config
