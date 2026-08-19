@@ -10,7 +10,7 @@ CalQ::CalQ(DataBase& db, SQLDatabase& sql_db, Settings& s, QWidget* parent)
 
     tabs = new QTabWidget(this);
     main_tab = new MainTab(database, settings);
-    database_tab = new DataBaseTab(database, sql_database);
+    database_tab = new DataBaseTab(database, sql_database, settings);
     history_tab = new HistoryTab(database, settings);
     settings_tab = new SettingsTab(settings);
     

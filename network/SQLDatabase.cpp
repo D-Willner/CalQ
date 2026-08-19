@@ -74,6 +74,16 @@ std::string SQL_database::key_from_type(const T&)
 }
 */
 
+
+void SQLDatabase::set_server_address(std::string address) { server_address = address; }
+std::string SQLDatabase::get_server_address() { return server_address; }
+void SQLDatabase::set_server_port(std::string port) { server_port = port; }
+std::string SQLDatabase::get_server_port() { return server_port; }
+void SQLDatabase::set_database_name(std::string db_name) { database_name = db_name; }
+std::string SQLDatabase::get_database_name() { return database_name; }
+void SQLDatabase::set_database_driver(std::string driver) { database_driver = driver; }
+std::string SQLDatabase::get_database_driver() { return database_driver; }
+
 void SQLDatabase::set_key(SQL_KEY key, std::string key_value)
 {
 	switch (key) {
@@ -151,7 +161,7 @@ bool SQLDatabase::contains(std::string name)
 {
 	QSqlQuery q;
 	bool executed = q.exec("SELECT NAME FROM " + QString::fromStdString(foodtype_table_key)
-		+ " WHERE NAME = " + QString::fromStdString(name) + ";");
+		+ " WHERE NAME = " + "'" + QString::fromStdString(name) + "'" + ";");
 	return executed && q.size() > 0;
 }
 
@@ -177,6 +187,30 @@ FoodType SQLDatabase::get(std::string name)
 	WEIGHT_T size = q.value(5).toDouble();
 
 	return FoodType(nm, cals, prot, carbs, fats, size);
+}
+
+std::vector<FoodType> SQLDatabase::search(std::string name)
+{
+
+	QSqlQuery q;
+	bool executed = q.exec(QString::fromStdString("SELECT " + name_key + ", " + cal_key + ", " + prot_key + ", " + carb_key
+		+ ", " + fat_key + ", " + size_key + " FROM " + foodtype_table_key
+		+ " WHERE NAME LIKE " + "'%" + name + "%'" + ";"));
+	if (!executed || q.size() < 0) return {};//throw new std::exception("Problem searching for name in SQL database");
+
+	std::vector<FoodType> ret;
+	while (q.next()) {
+		std::string name = q.value(0).toString().toStdString();
+		CAL_T cals = q.value(1).toDouble();
+		WEIGHT_T prot = q.value(2).toDouble();
+		WEIGHT_T carbs = q.value(3).toDouble();
+		WEIGHT_T fats = q.value(4).toDouble();
+		WEIGHT_T size = q.value(5).toDouble();
+
+		ret.push_back(FoodType(name, cals, prot, carbs, fats, size));
+	}
+
+	return ret;
 }
 
 std::vector<FoodType> SQLDatabase::all_foodtypes()

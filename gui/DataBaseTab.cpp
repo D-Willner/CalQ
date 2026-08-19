@@ -6,8 +6,11 @@
 #include "ToolTipLabel.h"
 #include <QMessageBox>
 #include <QThread>
+#include "AIConfigDialog.h"
+#include "SQLConfigDialog.h"
 
-DataBaseTab::DataBaseTab(DataBase& db, SQLDatabase& sql_db, QWidget* parent) : QWidget(parent), database(db), sql_database(sql_db)
+DataBaseTab::DataBaseTab(DataBase& db, SQLDatabase& sql_db, Settings& s, QWidget* parent) 
+	: QWidget(parent), database(db), sql_database(sql_db), settings(s)
 {
 	client = new Client(this);
 
@@ -42,6 +45,11 @@ DataBaseTab::DataBaseTab(DataBase& db, SQLDatabase& sql_db, QWidget* parent) : Q
 
 	QPushButton* SQL_add_btn = new QPushButton("Add");
 	QPushButton* SQL_configure_btn = new QPushButton("Configure");
+	QPushButton* SQL_upload_btn = new QPushButton("Upload");
+	QPushButton* SQL_download_btn = new QPushButton("Download");
+	SQL_connect_btn = new QPushButton("Connect"); 
+
+	update_sql_connect_btn();
 
 	QVBoxLayout* layout_SQL = new QVBoxLayout;
 
@@ -51,7 +59,10 @@ DataBaseTab::DataBaseTab(DataBase& db, SQLDatabase& sql_db, QWidget* parent) : Q
 
 	QHBoxLayout* layout_SQL_bottom = new QHBoxLayout;
 	layout_SQL_bottom->addWidget(SQL_add_btn, 1, Qt::AlignLeft);
-	layout_SQL_bottom->addWidget(SQL_configure_btn, 0, Qt::AlignLeft);
+	layout_SQL_bottom->addWidget(SQL_upload_btn, 0, Qt::AlignRight);
+	layout_SQL_bottom->addWidget(SQL_download_btn, 0, Qt::AlignRight);
+	layout_SQL_bottom->addWidget(SQL_connect_btn, 0, Qt::AlignRight);
+	layout_SQL_bottom->addWidget(SQL_configure_btn, 0, Qt::AlignRight);
 
 	layout_SQL->addWidget(SQL_label);
 	layout_SQL->addLayout(layout_SQL_search);
@@ -141,6 +152,65 @@ Remove them by pressing the \"-\" button.", "Exercises:"), 0, Qt::AlignLeft | Qt
 	QObject::connect(food_type_table, &FoodTable::cellChanged, this, &DataBaseTab::handle_ft_change);
 	QObject::connect(recipe_table, &FoodTable::cellDoubleClicked, this, &DataBaseTab::handle_rec_change);
 
+	//	SQL database connections
+	QObject::connect(SQL_search_btn, &QPushButton::clicked,
+		this, [&]() {
+			std::vector<FoodType> results = sql_database.search(SQL_search_name->text().toStdString());
+			SQL_search_results->clear();
+			for (const FoodType& ft : results) {
+				SQL_search_results->addItem(QString::fromStdString(ft.name()) + " (" + QString::number(ft.get_cals()) + " cal, " + QString::number(ft.get_prots()) + " prot, " + QString::number(ft.get_carbs()) + " carbs, " + QString::number(ft.get_fats()) + " fats)");
+			}
+	});
+	
+	QObject::connect(SQL_search_results, &QListWidget::itemClicked,
+		this, [&](QListWidgetItem* item) {
+			std::string name = item->text().toStdString();
+			name = name.substr(0, name.find(" ("));
+			FoodType ft = sql_database.get(name);
+			SQL_search_selection->clear_table();
+			SQL_search_selection->add_food(Food(ft,ft.get_size()));
+	});
+
+	QObject::connect(SQL_add_btn, &QPushButton::clicked,
+		this, [&]() {
+			if (SQL_search_selection->has_food(0)) {
+				database.overwrite(SQL_search_selection->read_food(0).food_type());
+				SQL_search_selection->clear_table();
+
+				food_type_table->clear_table();	//	Could be more efficient 
+				load_food_types();
+			}
+	});
+
+	QObject::connect(SQL_download_btn, &QPushButton::clicked,
+		this, [&]() {
+			for (const FoodType& ft : sql_database.all_foodtypes()) {
+				database.overwrite(ft);
+			}
+	});
+
+	QObject::connect(SQL_upload_btn, &QPushButton::clicked,
+		this, [&]() {
+			sql_database.update(database.foodtype_name_contains(""));
+	});
+
+	QObject::connect(SQL_connect_btn, &QPushButton::clicked,
+		this, [&]() {
+			if (sql_database.is_connected()) {
+				sql_database.disconnect();
+			}
+			else {
+				sql_database.connect();
+			}
+			update_sql_connect_btn();
+	});
+
+	QObject::connect(SQL_configure_btn, &QPushButton::clicked, this, [&]() {
+		SQLConfigDialog* dialog = new SQLConfigDialog(sql_database, settings, this);
+		dialog->open();
+	});
+
+	//	AI database connections
 	QObject::connect(AI_start_server_btn, &QPushButton::clicked, 
 		this, [&]() {
 			bool to_start = AI_start_server_btn->text() == "Start server";
@@ -174,6 +244,15 @@ Remove them by pressing the \"-\" button.", "Exercises:"), 0, Qt::AlignLeft | Qt
 
 	setFocusPolicy(Qt::ClickFocus);
 }
+
+void DataBaseTab::update_sql_connect_btn() {
+	if (sql_database.is_connected()) {
+		SQL_connect_btn->setText("Disconnect");
+	}
+	else {
+		SQL_connect_btn->setText("Connect");
+	}
+};
 
 void DataBaseTab::fetch_models()
 {

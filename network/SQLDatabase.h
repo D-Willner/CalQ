@@ -96,6 +96,7 @@ public:
 	bool contains(const FoodType&);
 
 	FoodType get(std::string name);
+	std::vector<FoodType> search(std::string name);
 	std::vector<FoodType> all_foodtypes();
 
 	bool add(const FoodType&);
@@ -108,6 +109,15 @@ public:
 
 
 	//	config
+	void set_server_address(std::string address);
+	std::string get_server_address();
+	void set_server_port(std::string port);
+	std::string get_server_port();
+	void set_database_name(std::string db_name);
+	std::string get_database_name();
+	void set_database_driver(std::string driver);
+	std::string get_database_driver();
+
 	void set_key(SQL_KEY, std::string key_value);
 	std::string get_key(SQL_KEY);
 };
