@@ -52,4 +52,6 @@ AIConfigDialog::AIConfigDialog(Settings& s, Client& c, QWidget* parent)
 	QObject::connect(cancel_btn, &QPushButton::clicked, this, [=]() {
 		this->reject();
 	});
+
+	setAttribute(Qt::WA_DeleteOnClose);
 }

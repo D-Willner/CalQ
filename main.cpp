@@ -41,9 +41,7 @@ int main(int argc, char *argv[])
 }
 
 /* TODO:    README
-            add InitializeDialog
-            SQL database
+*           Memory leak QDialog needs to be deleted after use or use WA_DeleteOnClose
             add ai photo recognition(pointless since too bad still? maybe learn how to train ai for this?)
-            add ai configure dialog and more options
             improve visuals (style sheets and frames)
 */

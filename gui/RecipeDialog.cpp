@@ -55,6 +55,7 @@ RecipeDialog::RecipeDialog(const Recipe& r, DataBase& db, QWidget* parent, Qt::W
 	);
 	//*/
 	setFocusPolicy(Qt::ClickFocus);
+	setAttribute(Qt::WA_DeleteOnClose);
 }
 
 

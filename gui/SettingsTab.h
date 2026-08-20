@@ -27,9 +27,11 @@ private:
     QPushButton* deny_btn;
 
     void set();
-    void fetch();
 
 public:
     explicit SettingsTab(Settings& s, QWidget* parent = nullptr);
+
+public slots:
+    void fetch();
 };
 

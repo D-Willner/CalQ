@@ -2,9 +2,12 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QFormLayout>
+#include "InitializeDialog.h"
 
 SettingsTab::SettingsTab(Settings& s, QWidget* parent) : QWidget(parent), settings(s)
 {
+	QPushButton* initialize_btn = new QPushButton("Initialize");
+
 	target_weight_sb = new QDoubleSpinBox;
 	target_weight_sb->setRange(0, 500);
 	target_weight_sb->setValue(s.get_target_weight());
@@ -45,6 +48,7 @@ SettingsTab::SettingsTab(Settings& s, QWidget* parent) : QWidget(parent), settin
 	btn_layout->addWidget(deny_btn, 1, Qt::AlignLeft);
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
+	layout->addWidget(initialize_btn, 0, Qt::AlignLeft);
 	layout->addLayout(form_upper_layout);
 	layout->addLayout(btn_layout,1);
 	layout->addStretch(1);
@@ -53,6 +57,15 @@ SettingsTab::SettingsTab(Settings& s, QWidget* parent) : QWidget(parent), settin
 		this, [this]() {set();});
 	QObject::connect(deny_btn, &QPushButton::clicked,
 		this, [this]() {fetch();});
+	QObject::connect(initialize_btn, &QPushButton::clicked,
+		this, [=]() {
+			InitializeDialog* init_dialog = new InitializeDialog(settings, this);
+			QObject::connect(init_dialog, &QDialog::accepted, this, [this, init_dialog]() {
+				this->fetch();
+				init_dialog->deleteLater();
+			});
+			init_dialog->open();
+	});
 }
 
 void SettingsTab::set()

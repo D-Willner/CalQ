@@ -75,4 +75,6 @@ SQLConfigDialog::SQLConfigDialog(SQLDatabase& sql_db, Settings& s, QWidget* pare
 	QObject::connect(cancel_btn, &QPushButton::clicked, this, [=]() {
 		this->reject();
 	});
+
+	setAttribute(Qt::WA_DeleteOnClose);
 }
