@@ -4,6 +4,7 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include "database/FoodType.h"
+#include "AISettings.h"
 
 class Client : public QNetworkAccessManager
 {
@@ -12,13 +13,17 @@ private:
 	std::string model_name;
 	std::string instruction;
 	std::string server_address;
+	std::string port;
 	std::string reasoning;
 
 	QNetworkReply* reply;
 	std::string requested_name;
 
+	std::string url() const;
+
 public:
 	explicit Client(QObject* parent = nullptr);
+	explicit Client(const AISettings& settings, QObject* parent = nullptr);
 
 	const std::string& get_instruction();
 	void set_instruction(const std::string& inst);
@@ -28,6 +33,9 @@ public:
 
 	const std::string& get_server_address();
 	void set_server_address(const std::string& address);
+
+	const std::string& get_port();
+	void set_port(const std::string& p);
 
 
 signals:

@@ -10,6 +10,7 @@ CAL_T Settings::get_calorie_target() const { return calorie_target; }
 CAL_T Settings::get_cal_burn() const { return cal_burn_daily; }
 
 SQLSettings Settings::get_sql_settings() const { return sql_settings; }
+AISettings Settings::get_ai_settings() const { return ai_settings; }
 
 bool Settings::is_enabled_AI() const { return AI_enabled; }
 
@@ -21,6 +22,7 @@ void Settings::set_calorie_target(CAL_T c) { calorie_target = c; }
 void Settings::set_cal_burn(CAL_T c) { cal_burn_daily = c; }
 
 void Settings::set_sql_settings(const SQLSettings& s) { sql_settings = s; }
+void Settings::set_ai_settings(const AISettings& s) { ai_settings = s; }
 
 void Settings::enable_AI(bool en) { AI_enabled = en; }
 
@@ -35,6 +37,7 @@ QJsonObject Settings::to_json() const
 	jo["cal_burn_daily"] = cal_burn_daily;
 	jo["AI_enabled"] = AI_enabled;
 	jo["sql_settings"] = sql_settings.to_json();
+	jo["ai_settings"] = ai_settings.to_json();
 
 	return jo;
 }
@@ -50,6 +53,7 @@ Settings Settings::from_json(const QJsonObject& jo)
 	s.cal_burn_daily = jo["cal_burn_daily"].toDouble(0.0);
 	s.AI_enabled = jo["AI_enabled"].toBool(true);
 	s.sql_settings = SQLSettings::from_json(jo["sql_settings"].toObject());
+	s.ai_settings = AISettings::from_json(jo["ai_settings"].toObject());
 
 	return s;
 }

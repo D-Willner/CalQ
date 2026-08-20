@@ -6,6 +6,7 @@
 #include "ExerciseType.h"
 #include "WeightEntry.h"
 #include "network/SQLSettings.h"
+#include "network/AISettings.h"
 
 class Settings
 {
@@ -18,11 +19,10 @@ private:
 	CAL_T cal_burn_daily;
 
 	SQLSettings sql_settings;
+	AISettings ai_settings;
 
 	bool AI_enabled;
-	std::string last_model;
-	bool auto_load_last_model;
-
+	
 	Settings() = default;
 public:
 
@@ -34,6 +34,7 @@ public:
 	CAL_T get_cal_burn() const;
 
 	SQLSettings get_sql_settings() const;
+	AISettings get_ai_settings() const;
 
 	bool is_enabled_AI() const;
 	
@@ -45,6 +46,7 @@ public:
 	void set_cal_burn(CAL_T c);
 
 	void set_sql_settings(const SQLSettings& s);
+	void set_ai_settings(const AISettings& s);
 
 	void enable_AI(bool);
 

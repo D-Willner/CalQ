@@ -12,7 +12,7 @@
 DataBaseTab::DataBaseTab(DataBase& db, SQLDatabase& sql_db, Settings& s, QWidget* parent) 
 	: QWidget(parent), database(db), sql_database(sql_db), settings(s)
 {
-	client = new Client(this);
+	client = new Client(settings.get_ai_settings(), this);
 
 	food_type_table = new FoodTable(5);
 	food_type_table->set_name_editable(false);
@@ -231,6 +231,14 @@ Remove them by pressing the \"-\" button.", "Exercises:"), 0, Qt::AlignLeft | Qt
 	QObject::connect(AI_model_list, &QComboBox::currentTextChanged,
 		this, [&](const QString& qs) {
 			client->set_model_name(last_models[qs.toStdString()]);
+			auto ai_settings = settings.get_ai_settings();
+			ai_settings.set_key(AISettings::LAST_MODEL_USED, last_models[qs.toStdString()]);
+			settings.set_ai_settings(ai_settings);
+	});
+
+	QObject::connect(AI_config_btn, &QPushButton::clicked, this, [&]() {
+		AIConfigDialog* dialog = new AIConfigDialog(settings, *client, this);
+		dialog->open();
 	});
 
 	QObject::connect(AI_add_btn, &QPushButton::clicked, this, &DataBaseTab::AI_add_food);
@@ -375,9 +383,18 @@ void DataBaseTab::update_models(const std::vector<std::pair<std::string, std::st
 {
 	AI_model_list->clear();
 	last_models.clear();
+
+	std::string last_used_model = settings.get_ai_settings().get_key(AISettings::LAST_MODEL_USED);
+	std::string last_model_display_name = "";
 	for (const auto& p : models) {
 		AI_model_list->addItem(QString::fromStdString(p.first));
 		last_models[p.first] = p.second;
+		if(p.second == last_used_model) {
+			last_model_display_name = p.first;
+		}
+	}
+	if (last_model_display_name != "") {
+		AI_model_list->setCurrentText(QString::fromStdString(last_model_display_name));
 	}
 }
 

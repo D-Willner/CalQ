@@ -7,9 +7,17 @@
 
 using namespace std::chrono_literals;
 
-Client::Client(QObject* parent) : QNetworkAccessManager(parent) 
+
+Client::Client(const AISettings& settings, QObject* parent) 
+	: QNetworkAccessManager(parent),
+		model_name(settings.get_key(AISettings::LAST_MODEL_USED)),
+		instruction(settings.get_key(AISettings::INSTRUCTION)),
+		server_address(settings.get_key(AISettings::SERVER_ADDRESS)),
+		port(settings.get_key(AISettings::PORT))
+{}
+
+Client::Client(QObject* parent) : Client(AISettings(), parent)
 {
-	server_address = "http://localhost:1234";
 	//instruction = "You will receive the name of a food or drink. \
 Reply with an estimate for the calories, that 100g or 100ml of that food or drink contain. \
 Only reply with this number and nothing else. \
@@ -24,19 +32,11 @@ in line three only write the number of carbohydrates per 100g \
 and in line four only write the number of fats per 100g.\
 Write nothing else. \
 The name is: ";
-	instruction = "You will receive the name of a food or drink. \
-Reply with an estimate for the calories, the proteins, the carbohydrates and fats, \
-that 100g of that food or drink contain. \
-Your reply must have the following Json format. \
-On the top level have a Json object, which contains the following fields:\
-Field \"calories\" containing the number of calories per 100g, \
-Field \"protein\" containing the number of protein per 100g, \
-Field \"carbohydrates\" containing the number of carbohydrates per 100g, \
-Field \"fats\" containing the number of fats per 100g, \
-Write nothing else. The output must be in a parsable Json format. \
-Do not write ```json or anything similiar! \
-The name is: ";
-	model_name = "google/gemma-4-e2b";
+}
+
+std::string Client::url() const
+{
+	return "http://" + server_address + ":" + port;	//	http:// might give problems
 }
 
 const std::string& Client::get_instruction() { return instruction; }
@@ -48,12 +48,14 @@ void Client::set_model_name(const std::string& name) { if (name != "") model_nam
 const std::string& Client::get_server_address() { return server_address; }
 void Client::set_server_address(const std::string& address) { server_address = address; }
 
+const std::string& Client::get_port() { return port; }
+void Client::set_port(const std::string& p) { port = p; }
 
 bool Client::request_models()
 {
 	if (reply) return false;
-
-	QNetworkRequest req(QUrl(QString::fromStdString(server_address + "/api/v1/models" )));
+	QString u = QString::fromStdString(url());
+	QNetworkRequest req(QUrl(QString::fromStdString(url() + "/api/v1/models")));
 	//req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 	req.setTcpKeepAliveIdleTimeBeforeProbes(20s);
 	req.setTcpKeepAliveIntervalBetweenProbes(2s);
@@ -71,7 +73,7 @@ bool Client::request_food_data(const std::string& name)
 	if (reply) return false;
 	requested_name = name;
 
-	QNetworkRequest req(QUrl(QString::fromStdString(server_address + "/api/v1/chat")));
+	QNetworkRequest req(QUrl(QString::fromStdString(url() + "/api/v1/chat")));
 	req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 	req.setTcpKeepAliveIdleTimeBeforeProbes(20s);
 	req.setTcpKeepAliveIntervalBetweenProbes(2s);
@@ -186,7 +188,7 @@ void Client::food_data_received()
 // bad, only one request at a time otherwise bug
 void Client::send_request(const QString& qs)
 {
-	QNetworkRequest req(QUrl(QString::fromStdString(server_address + "/api/v1/chat")));
+	QNetworkRequest req(QUrl(QString::fromStdString(url() + "/api/v1/chat")));
 	req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 	req.setTcpKeepAliveIdleTimeBeforeProbes(20s);
 	req.setTcpKeepAliveIntervalBetweenProbes(2s);
