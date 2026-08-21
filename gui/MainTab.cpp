@@ -3,9 +3,11 @@
 #include <QHeaderView>
 #include <iostream>
 #include <QMessageBox>
+#include <QFrame>
 #include <cmath>
 #include "ToolTip.h"
 #include "ToolTipLabel.h"
+#include "StyleSheets.h"
 
 
 MainTab::MainTab(DataBase& db, Settings& s, QWidget* parent) 
@@ -23,11 +25,25 @@ Alternatively add entries directly to the table.");
     macro_chart->set_protein(db.today().protein());
     macro_chart->set_carbs(db.today().carbs());
     macro_chart->set_fats(db.today().fats());
-    macro_chart->setFixedSize(400, 300);
     macro_chart->setToolTip("Displays the macro nutrients consumed today.");
 
+    QFrame* info_display_frame = new QFrame;
+    info_display_frame->setStyleSheet(FRAME_STYLE);
+
+    QVBoxLayout* info_display_layout = new QVBoxLayout(info_display_frame);
+
+    ToolTipLabel* info_display_label = new ToolTipLabel("Displays the currently consumed calories\nagainst the calorie target plus the calories exercised today,\nas well as the macronutries of today.", 
+        "Calories and Macronutrients:");
+    info_display_label->setStyleSheet(TTLABEL_STYLE);
+    info_display_label->set_margin(5);
+    info_display_label->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
+
     calorie_display = new CalorieDisplay;
-    calorie_display->set_target_calories(settings.get_calorie_target());    //  should update when settings updated
+    calorie_display->set_target_calories(settings.get_calorie_target()); 
+
+    info_display_layout->addWidget(info_display_label);
+    info_display_layout->addWidget(calorie_display);
+    info_display_layout->addWidget(macro_chart);
 
     food_table = new FoodTable(5, FoodTable::NO_FACTOR);
     food_table->set_editable(false);
@@ -64,6 +80,12 @@ Remove entries using the \"-\" Button.");
     search_exercise = new SearchField(this);
     search_exercise->get_input_widget()->setToolTip("Search the database for exercise types already added.\nAlternatively add entries directly to the table.");
 
+
+    ToolTipLabel* weight_label = new ToolTipLabel("Update and view bodyweight", "Bodyweight:");
+    weight_label->setStyleSheet(TTLABEL_STYLE);
+    weight_label->set_margin(5);
+    weight_label->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
+
     weight_entry_editor = new QDoubleSpinBox;
     weight_entry_editor->setMaximum(500);
     weight_btn = new QPushButton("Update Weight");
@@ -72,70 +94,94 @@ If one already exists, it is overwritten.");
     QDate day = QDate::currentDate();
     day = day.addDays(-7);
     weight_chart = new WeightChart(database.weights_range(day));
-    weight_chart->setFixedSize(400, 200);
+    weight_chart->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    weight_chart->setMinimumHeight(150);
 
-    layout_add_table_upper = new QHBoxLayout();
-    layout_add_table_upper->addWidget(add_food_btn,1 ,Qt::AlignLeft);
-    layout_add_table_upper->addWidget(search_eatables->get_input_widget(), 0, Qt::AlignRight);
-    layout_add_table_upper->addWidget(search_btn, 0, Qt::AlignRight);
+    layout_add_table = new QHBoxLayout();
+    layout_add_table->addWidget(add_food_btn, 0 ,Qt::AlignLeft);
+    layout_add_table->addWidget(add_recipe_btn, 0, Qt::AlignLeft);
+    layout_add_table->addWidget(recipe_name_line, 1, Qt::AlignLeft);
+    layout_add_table->addWidget(search_eatables->get_input_widget(), 0, Qt::AlignRight);
+    layout_add_table->addWidget(search_btn, 0, Qt::AlignRight);
 
-    layout_add_table_lower = new QHBoxLayout();
-    layout_add_table_lower->addWidget(add_recipe_btn, 0, Qt::AlignLeft);
-    layout_add_table_lower->addWidget(recipe_name_line, 1, Qt::AlignLeft);
-
-    QHBoxLayout* layout_exercise = new QHBoxLayout();
+    QFrame* exercise_frame = new QFrame;
+    exercise_frame->setStyleSheet(FRAME_STYLE);
+    QVBoxLayout* layout_exercise = new QVBoxLayout(exercise_frame);
+    QHBoxLayout* layout_exercise_low = new QHBoxLayout();
     QVBoxLayout* layout_exercise_left = new QVBoxLayout();
     QVBoxLayout* layout_exercise_right = new QVBoxLayout();
 
     ToolTipLabel* tt = new ToolTipLabel("Display all the exercises done today.\n\
 Press the \"-\" button to remove exercises.", "Exercised today:");
-    layout_exercise_left->addWidget(tt, 1, Qt::AlignLeft);
-    layout_exercise_left->addWidget(exerciseTable,1,Qt::AlignTop);
+    tt->setStyleSheet(TTLABEL_STYLE);
+    tt->set_margin(5);
+    tt->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
+    layout_exercise->addWidget(tt);
+    layout_exercise->addLayout(layout_exercise_low);
+    layout_exercise_left->addWidget(exerciseTable,1,Qt::AlignTop | Qt::AlignLeft);
 
     QHBoxLayout* layout_add_exercise = new QHBoxLayout();
 
-    layout_add_exercise->addWidget(add_exercise_btn, 1, Qt::AlignLeft);
-    layout_add_exercise->addWidget(search_exercise->get_input_widget());
+    layout_add_exercise->addWidget(add_exercise_btn, 0, Qt::AlignLeft);
+    layout_add_exercise->addWidget(search_exercise->get_input_widget(), 0, Qt::AlignLeft);
 
-    layout_exercise_right->addSpacing(40);  //  should use gridlayout here instead
     layout_exercise_right->addLayout(layout_add_exercise);
     layout_exercise_right->addWidget(add_exercise_table, 1, Qt::AlignTop);
 
-
-    layout_exercise->addLayout(layout_exercise_left);
-    layout_exercise->addLayout(layout_exercise_right);
+    layout_exercise_low->addLayout(layout_exercise_left,1);
+    layout_exercise_low->addLayout(layout_exercise_right);
 
     layout_high = new QHBoxLayout();
     layout_left = new QVBoxLayout();
     layout_right = new QVBoxLayout();
 
-    layout_left->addWidget(new ToolTipLabel("Displays all the food eaten today.\n\
-Press the \"-\" button to remove food.", "Eaten today:"), 1, Qt::AlignLeft);
-    layout_left->addWidget(food_table,0, Qt::AlignTop | Qt::AlignLeft);
-    layout_left->addWidget(new QLabel(""));
-    layout_left->addLayout(layout_add_table_upper);
-    layout_left->addLayout(layout_add_table_lower);
-    layout_left->addWidget(add_table, 0, Qt::AlignTop | Qt::AlignLeft);
-    layout_left->addLayout(layout_exercise, 1);
+    QFrame* h_line = new QFrame();
+    h_line->setFrameShape(QFrame::HLine);
+    h_line->setFixedHeight(1);
+    h_line->setContentsMargins(0, 20, 0, 20);
+    h_line->setStyleSheet(".QFrame{border-color: lightgray}");
 
-    QHBoxLayout* layout_weight = new QHBoxLayout();
-    layout_weight->addWidget(weight_entry_editor,0,Qt::AlignTop  | Qt::AlignLeft);
-    layout_weight->addWidget(weight_btn, 1, Qt::AlignTop | Qt::AlignLeft);
+	QFrame* food_table_frame = new QFrame;
+	food_table_frame->setStyleSheet(FRAME_STYLE);
+    ToolTipLabel* food_table_label = new ToolTipLabel("Displays all the food eaten today.\n\
+Press the \"-\" button to remove food.", "Eaten today:");
+    food_table_label->setStyleSheet(TTLABEL_STYLE);
+    food_table_label->set_margin(5);
+    food_table_label->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
+	QVBoxLayout* food_table_frame_layout = new QVBoxLayout(food_table_frame);
+    food_table_frame_layout->addWidget(food_table_label);
+    food_table_frame_layout->addWidget(food_table,0, Qt::AlignTop | Qt::AlignLeft);
+    food_table_frame_layout->addWidget(h_line);
+    food_table_frame_layout->addLayout(layout_add_table);
+    food_table_frame_layout->addWidget(add_table, 0, Qt::AlignTop | Qt::AlignLeft);
+    layout_left->addWidget(food_table_frame);
+    layout_left->addWidget(exercise_frame, 1);
 
-    layout_right->addWidget(calorie_display, 0, Qt::AlignTop);
-    layout_right->addWidget(macro_chart, 0, Qt::AlignTop | Qt::AlignLeft);
-    layout_right->addLayout(layout_weight);
-    layout_right->addWidget(weight_chart, 1, Qt::AlignTop);
+    QFrame* weight_frame = new QFrame;
+    weight_frame->setStyleSheet(FRAME_STYLE);
+    QVBoxLayout* layout_weight = new QVBoxLayout(weight_frame);
+
+    QHBoxLayout* layout_weight_edit = new QHBoxLayout();
+    layout_weight_edit->addWidget(weight_entry_editor, 0,Qt::AlignTop  | Qt::AlignLeft);
+    layout_weight_edit->addWidget(weight_btn, 1, Qt::AlignTop | Qt::AlignLeft);
+
+    layout_weight->addWidget(weight_label);
+    layout_weight->addLayout(layout_weight_edit);
+    layout_weight->addWidget(weight_chart);
+
+    layout_right->addWidget(info_display_frame);
+    layout_right->addWidget(weight_frame);
 
     layout_high->addLayout(layout_left);
+    layout_high->addSpacing(10);
     layout_high->addLayout(layout_right);
 
     setLayout(layout_high);
 
-    search_eatables->get_result_widget()->setParent(this);
+    search_eatables->get_result_widget()->setParent(food_table_frame);
     search_eatables->get_result_widget()->hide();
 
-    search_exercise->get_result_widget()->setParent(this);
+    search_exercise->get_result_widget()->setParent(exercise_frame);
 
     QObject::connect(add_food_btn, SIGNAL(clicked()), this, SLOT(add_food_today()));
     QObject::connect(food_table, SIGNAL(food_removed(const Food&)), this, SLOT(remove_food_today(const Food&)));

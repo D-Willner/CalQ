@@ -3,15 +3,11 @@
 
 CalorieDisplay::CalorieDisplay(QWidget* parent) : QWidget(parent)
 {
-	name_label = new ToolTipLabel("Displays the currently consumed calories\nagainst the calorie target plus the calories exercised today","Calories:");
-
-
 	draw_area = new CalorieBars;
 	draw_area->setMinimumSize(200, 100);
 
 	
 	layout = new QVBoxLayout();
-	layout->addWidget(name_label, 0, Qt::AlignHCenter);
 	layout->addWidget(draw_area);
 
 	setLayout(layout);

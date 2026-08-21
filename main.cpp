@@ -25,23 +25,11 @@ int main(int argc, char *argv[])
 
     CalQ window(db, sql_db, s);
     window.show();
-    
-    QFile log("log.txt");
-    bool file_ok = log.open(QFile::WriteOnly);
-
-
-    //sql_db.add(db.get_foodtype("Apple"));
-
-    //FoodType ft = sql_db.get("Apple");
-
-    //int written = log.write(qs.toUtf8());
-    log.close();
 
     return app.exec();
 }
 
 /* TODO:    README
-*           Memory leak QDialog needs to be deleted after use or use WA_DeleteOnClose
-            add ai photo recognition(pointless since too bad still? maybe learn how to train ai for this?)
-            improve visuals (style sheets and frames)
+            add ai photo recognition(pointless since too bad still? maybe learn how to train ai/opencv for this?)
+            improve SettingsTab
 */

@@ -12,6 +12,7 @@ WeightChart::WeightChart(const std::vector<std::pair<QDate, BODYWEIGHT_T>>& v, Q
 	chart = new QChart;
 	chart->addSeries(data);
 	chart->legend()->hide();
+	chart->setContentsMargins(-10,-20,-10,-20);
 
 	y_axis = new QValueAxis;
 	x_axis = new QDateTimeAxis;
@@ -29,7 +30,7 @@ WeightChart::WeightChart(const std::vector<std::pair<QDate, BODYWEIGHT_T>>& v, Q
 	update_axes();
 
 	setChart(chart);
-	chart->setTitle("Weight history:");
+	chart->setTitle("Weight (kg):");
 
 
 	setRenderHint(QPainter::Antialiasing);

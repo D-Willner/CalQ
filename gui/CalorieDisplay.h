@@ -17,7 +17,6 @@ private:
     CAL_T calorie_target;
 
     QVBoxLayout* layout;
-    ToolTipLabel* name_label;
     CalorieBars* draw_area;
 
 public:

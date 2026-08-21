@@ -45,15 +45,12 @@ private:
     FoodTable* food_table;
 
 
-    QHBoxLayout* layout_add_table_upper;
+    QHBoxLayout* layout_add_table;
     QPushButton* add_food_btn;
     QPushButton* search_btn;
     //SearchLine search_line;
     SearchField* search_eatables;
     DataBaseSearcher* eatables_searcher;
-
-
-    QHBoxLayout* layout_add_table_lower;
     QPushButton* add_recipe_btn;
     QLineEdit* recipe_name_line;
 

@@ -5,14 +5,14 @@
 MacroChart::MacroChart(QWidget* parent) : QChartView(parent)
 {
     chart = new QChart();
-    //m_chart->setMinimumSize(400, 300);
-    //m_chart->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    chart->setContentsMargins(-10, -30, -10, -30);
+    //chart->setViewportMargins(0, 0, 0, 0);
 
     data = new QBarSeries;
 
-    protein = new QBarSet("Protein");
-    carbs = new QBarSet("Carbs");
-    fats = new QBarSet("Fats");
+    protein = new QBarSet("Protein (g)");
+    carbs = new QBarSet("Carbohydrates (g)");
+    fats = new QBarSet("Fats (g)");
 
     protein->append(0);
     carbs->append(0);
@@ -31,10 +31,12 @@ MacroChart::MacroChart(QWidget* parent) : QChartView(parent)
     chart->setAnimationOptions(QChart::SeriesAnimations);
 
     setRenderHint(QPainter::Antialiasing);
-    setMinimumSize(400, 300);
-    setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
-    setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    setMinimumSize(400, 200);
+    //setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+    setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     setChart(chart);
+    //setContentsMargins(0, -30, 0, 0);
+    //setViewportMargins(0, -30, 0, -30);
 }
 
 int MacroChart::yaxis_is_max()

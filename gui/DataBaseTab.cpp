@@ -8,6 +8,7 @@
 #include <QThread>
 #include "AIConfigDialog.h"
 #include "SQLConfigDialog.h"
+#include "StyleSheets.h"
 
 DataBaseTab::DataBaseTab(DataBase& db, SQLDatabase& sql_db, Settings& s, QWidget* parent) 
 	: QWidget(parent), database(db), sql_database(sql_db), settings(s)
@@ -17,18 +18,17 @@ DataBaseTab::DataBaseTab(DataBase& db, SQLDatabase& sql_db, Settings& s, QWidget
 	food_type_table = new FoodTable(5);
 	food_type_table->set_name_editable(false);
 	recipe_table = new FoodTable(5);
-	//recipe_table->set_name_editable(false);
 	recipe_table->set_editable(false);
 	meal_table = new FoodTable(5);
-	//meal_table->set_name_editable(false);
 	meal_table->set_editable(false);
 
 	exercise_table = new ExerciseTable(5);
 	exercise_table->set_name_editable(false);
 
 	ToolTipLabel* SQL_label = new ToolTipLabel("Search for food types in the SQL database.\nManage and configure the database.", "SQL Database:");
-	SQL_label->setStyleSheet("QFrame{border-style: solid; border-width: 2px; border-color: black; padding: 0px; border-radius: 5px; color: black; background-color: lightgray; margin-top: 5px;}\
-							QLabel{border-style: none; margin: 0px; border-width: 0px; padding: 0px; border-radius: 0px; color: black;}");
+	SQL_label->setStyleSheet(TTLABEL_STYLE);
+	SQL_label->set_margin(5);
+	SQL_label->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
 
 	SQL_search_name = new QLineEdit;
 	SQL_search_name->setMinimumWidth(200);
@@ -81,11 +81,9 @@ DataBaseTab::DataBaseTab(DataBase& db, SQLDatabase& sql_db, Settings& s, QWidget
 	//AI_model_list->
 
 	ToolTipLabel* AI_label = new ToolTipLabel("Search for foods using AI.\nConfigure and manage the AI model.", "AI Search:");
-	//AI_label->setFrameShape(QFrame::Panel);
-	//AI_label->setFrameShadow(QFrame::Sunken);
-	//AI_label->setLineWidth(2);
-	AI_label->setStyleSheet("QFrame{border-style: solid; border-width: 2px; border-color: black; padding: 0px; border-radius: 5px; color: black; background-color: lightgray; margin-top: 5px;}\
-							QLabel{border-style: none; margin: 0px; border-width: 0px; padding: 0px; border-radius: 0px; color: black;}");
+	AI_label->setStyleSheet(TTLABEL_STYLE);
+	AI_label->set_margin(5);
+	AI_label->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
 
 	QPushButton* AI_search_btn = new QPushButton("Ask");
 	QPushButton* AI_add_btn = new QPushButton("Add");
@@ -107,35 +105,83 @@ DataBaseTab::DataBaseTab(DataBase& db, SQLDatabase& sql_db, Settings& s, QWidget
 
 	QVBoxLayout* layout_left = new QVBoxLayout;
 
-	layout_left->addWidget(new ToolTipLabel("Displays all the foods in the database.\n\
+	QFrame* food_type_frame = new QFrame;
+	food_type_frame->setStyleSheet(FRAME_STYLE);
+	QVBoxLayout* layout_food_type_frame = new QVBoxLayout(food_type_frame);
+	ToolTipLabel* tt_food_type = new ToolTipLabel("Displays all the foods in the database.\n\
 Modify them by changing the values.\n\
-Remove them by pressing the \"-\" button.", "Foods:"), 0, Qt::AlignLeft);
-	layout_left->addWidget(food_type_table, 0, Qt::AlignLeft);
-	layout_left->addWidget(new ToolTipLabel("Displays all the recipes in the database.\n\
+Remove them by pressing the \"-\" button.", "Foods:");
+	tt_food_type->setStyleSheet(TTLABEL_STYLE);
+	tt_food_type->set_margin(5);
+	tt_food_type->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
+
+	layout_food_type_frame->addWidget(tt_food_type);
+	layout_food_type_frame->addWidget(food_type_table, 1, Qt::AlignLeft | Qt::AlignTop);
+
+	QFrame* recipe_frame = new QFrame;
+	recipe_frame->setStyleSheet(FRAME_STYLE);
+	QVBoxLayout* layout_recipe_frame = new QVBoxLayout(recipe_frame);
+	ToolTipLabel* tt_recipe = new ToolTipLabel("Displays all the recipes in the database.\n\
 Modify them by double clicking.\n\
-Remove them by pressing the \"-\" button.", "Recipes:"), 0, Qt::AlignLeft);
-	layout_left->addWidget(recipe_table, 0, Qt::AlignLeft);
-	layout_left->addWidget(new ToolTipLabel("Displays all the meals in the database.\n\
-Remove them by pressing the \"-\" button.", "Meals:"), 0, Qt::AlignLeft);
-	layout_left->addWidget(meal_table, 0, Qt::AlignLeft);
+Remove them by pressing the \"-\" button.", "Recipes:");
+	tt_recipe->setStyleSheet(TTLABEL_STYLE);
+	tt_recipe->set_margin(5);
+	tt_recipe->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
+
+	layout_recipe_frame->addWidget(tt_recipe);
+	layout_recipe_frame->addWidget(recipe_table, 1, Qt::AlignLeft | Qt::AlignTop);
+
+	QFrame* meal_frame = new QFrame;
+	meal_frame->setStyleSheet(FRAME_STYLE);
+	QVBoxLayout* layout_meal_frame = new QVBoxLayout(meal_frame);
+	ToolTipLabel* tt_meal = new ToolTipLabel("Displays all the meals in the database.\n\
+Remove them by pressing the \"-\" button.", "Meals:");
+	tt_meal->setStyleSheet(TTLABEL_STYLE);
+	tt_meal->set_margin(5);
+	tt_meal->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
+
+	layout_meal_frame->addWidget(tt_meal);
+	layout_meal_frame->addWidget(meal_table, 1, Qt::AlignLeft | Qt::AlignTop);
+
+	layout_left->addWidget(food_type_frame);
+	layout_left->addWidget(recipe_frame);
+	layout_left->addWidget(meal_frame);
 
 	QVBoxLayout* layout_right = new QVBoxLayout;
 
-
-	layout_right->addWidget(new ToolTipLabel("Displays all the exercises in the database.\n\
+	QFrame* exercise_frame = new QFrame;
+	exercise_frame->setStyleSheet(FRAME_STYLE);
+	QVBoxLayout* layout_exercise_frame = new QVBoxLayout(exercise_frame);
+	ToolTipLabel* tt_exercise = new ToolTipLabel("Displays all the exercises in the database.\n\
 Modify them by changing the values.\n\
-Remove them by pressing the \"-\" button.", "Exercises:"), 0, Qt::AlignLeft | Qt::AlignTop);
-	layout_right->addWidget(exercise_table,0, Qt::AlignLeft | Qt::AlignTop);
-	layout_right->addLayout(layout_SQL, 1);
-	layout_right->addWidget(AI_label);
-	layout_right->addLayout(layout_AI_search);
-	layout_right->addWidget(AI_search_result);
-	layout_right->addLayout(layout_AI_bottom);
+Remove them by pressing the \"-\" button.", "Exercises:");
+	tt_exercise->setStyleSheet(TTLABEL_STYLE);
+	tt_exercise->set_margin(5);
+	tt_exercise->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
+
+	layout_exercise_frame->addWidget(tt_exercise);
+	layout_exercise_frame->addWidget(exercise_table, 1, Qt::AlignLeft | Qt::AlignTop);
+
+	QFrame* SQL_frame = new QFrame;
+	SQL_frame->setStyleSheet(FRAME_STYLE);
+	SQL_frame->setLayout(layout_SQL);
+
+	QFrame* AI_frame = new QFrame;
+	AI_frame->setStyleSheet(FRAME_STYLE);
+	QVBoxLayout* AI_layout = new QVBoxLayout(AI_frame);
+	AI_layout->addWidget(AI_label);
+	AI_layout->addLayout(layout_AI_search);
+	AI_layout->addWidget(AI_search_result);
+	AI_layout->addLayout(layout_AI_bottom);
+
+	layout_right->addWidget(exercise_frame);
+	layout_right->addWidget(SQL_frame, 1);
+	layout_right->addWidget(AI_frame);
 
 	QHBoxLayout* layout = new QHBoxLayout;
 
 	layout->addLayout(layout_left,1);
-	layout->addSpacing(50);
+	layout->addSpacing(10);
 	layout->addLayout(layout_right);
 
 	setLayout(layout);
