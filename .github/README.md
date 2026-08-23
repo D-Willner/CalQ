@@ -1,6 +1,6 @@
 # CalQ
 
-Track how many calories you eat, your macronutrients and how much you exercise.
+Track how many calories you eat, your macronutrients and how much you exercise.<br>
 This program allows you to log your meals and weight, create recipes for ease of use and track how much of a meal you have eaten, if you did not finish it all.
 As you use CalQ, you will build up a database of different foods and exercises, which enables you to quickly add them again.
 You can display graphs showing you food consumption, weight and how much was exercised on each day.
