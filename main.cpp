@@ -20,6 +20,8 @@ int main(int argc, char *argv[])
 
     QApplication app(argc, argv);
 
+    //app.setStyleSheet("QLabel{font-family: \"Candara\"}");
+
     //sql_db.connect();
     //sql_db.initialize_db();
 
