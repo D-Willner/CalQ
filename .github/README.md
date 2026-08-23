@@ -10,6 +10,6 @@ As you use the program you gradually build your own database of foods, recipes a
 - Connect to an SQL server and either import all the data or search for single foods. The program can be configured to accept different table and field names to make this simple.
 - Ask AI which is locally hosted using LMStudio/Bionic. You will receive a (hopefully accurate) result and can decide to import it into the local database. An AI model which I found to work well for this is Gemma 4 E4B, which tends to be both accurate and quick and needs less than 8GB of memory.
 
-![Image of the database tab](./github/Database.png)
+![Image of the database tab](/.github/Database.png)
 
 Built using C++ and Qt 6.11.
