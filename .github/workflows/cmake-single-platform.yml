@@ -37,7 +37,7 @@ jobs:
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       #run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
       run: cmake -S "${{github.workspace}}" -B "${{github.workspace}}/build" -G Ninja -DCMAKE_BUILD_TYPE=Debug 
-        -DCMAKE_PREFIX_PATH=${{QT_ROOT_DIR}}
+        -DCMAKE_PREFIX_PATH=${{github.workspace}}/Qt/6.11.0/win64_msvc2022_64
         -DCMAKE_CXX_COMPILER=${{github.workspace}}/Qt/Tools/mingw1310_64/bin/g++.exe 
         -DCMAKE_MAKE_PROGRAM=${{github.workspace}}/Qt/Tools/Ninja/ninja.exe
 
