@@ -1,5 +1,5 @@
 #pragma once
-#include "C:\Qt\6.11.1\msvc2022_64\include\QtWidgets\qwidget.h"
+#include "qwidget.h"
 #include <QDateTimeEdit>
 #include <QDateEdit>
 #include <QComboBox>

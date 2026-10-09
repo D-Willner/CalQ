@@ -1,5 +1,5 @@
 #pragma once
-#include "C:\Qt\6.11.1\msvc2022_64\include\QtWidgets\qdialog.h"
+#include "qdialog.h"
 #include "database/settings.h"
 
 //  Class asks user for some information to then initialize starting_weigth, target_weight, starting_date, calorie_target, cal_burn_daily

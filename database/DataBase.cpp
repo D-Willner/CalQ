@@ -45,7 +45,7 @@ BODYWEIGHT_T DataBase::last_weight()
 
 QDate DataBase::last_weight_date()
 {
-    if (weight_history.size() == 0) throw new std::exception("No weight entries");
+    if (weight_history.size() == 0) throw new std::runtime_error("No weight entries");
     auto it = --weight_history.end();
     return it->first;
 }
@@ -339,7 +339,7 @@ template<typename T>
 T DataBase::get(std::string name, const std::map<std::string, T>& m)
 {
     auto it = m.find(name);
-    if (it == m.end()) throw new std::exception("Could not find name in map");
+    if (it == m.end()) throw new std::runtime_error("Could not find name in map");
 
     return it->second;
 }

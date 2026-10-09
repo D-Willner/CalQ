@@ -115,7 +115,7 @@ bool ExerciseTable::has_exercise(int row)
 
 Exercise ExerciseTable::read_exercise(int row)
 {
-    if (row >= rowCount()) throw new std::exception("Row out of bounds");
+    if (row >= rowCount()) throw new std::runtime_error("Row out of bounds");
 
     auto cur = item(row, 0);
     std::string name = "";
@@ -125,12 +125,12 @@ Exercise ExerciseTable::read_exercise(int row)
     TIME_T duration = 0;
     bool ret;
     if (cur != nullptr) duration = cur->text().toDouble(&ret);
-    if(!ret) throw new std::exception("Row has no exercise");
+    if(!ret) throw new std::runtime_error("Row has no exercise");
 
     cur = item(row, 2);
     CAL_T cals = 0;
     if (cur != nullptr) cals = cur->text().toDouble(&ret);
-    if (!ret) throw new std::exception("Row has no exercise");
+    if (!ret) throw new std::runtime_error("Row has no exercise");
 
     if (duration == 0) duration = 60;   //  idk
     ExerciseType et(name, cals * 60 / duration);

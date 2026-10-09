@@ -12,7 +12,7 @@
 #include <QSqlQuery>
 #include "network/SQLDatabase.h"
 
-int main(int argc, char *argv[])
+int main(int argc, char** argv)
 {
     DataBase db;
     Settings s = Settings::load();

@@ -250,7 +250,7 @@ Food FoodTable::read_food(int row)
     ok &= ret;
 
     if (!ok) {
-        throw new std::exception("Could not convert table data into food data");
+        throw new std::runtime_error("Could not convert table data into food data");
     }
     if (amount == 0) amount = 100;
     FoodType ft(name, cals * 100 / amount, prot * 100 / amount, carbs * 100 / amount, fats * 100 / amount, amount);

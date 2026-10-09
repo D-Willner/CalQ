@@ -191,7 +191,7 @@ FoodType SQLDatabase::get(std::string name)
 	bool executed = q.exec(QString::fromStdString("SELECT " + name_key + ", " + cal_key + ", " + prot_key + ", " + carb_key
 		+ ", " + fat_key + ", " + size_key + " FROM " + foodtype_table_key
 		+ " WHERE NAME = " + "'" + name + "'" + ";"));
-	if (!executed || q.size() <= 0) throw new std::exception("Could not find name in SQL database");
+	if (!executed || q.size() <= 0) throw new std::runtime_error("Could not find name in SQL database");
 
 	q.next();
 	std::string nm = q.value(0).toString().toStdString();
@@ -211,7 +211,7 @@ std::vector<FoodType> SQLDatabase::search(std::string name)
 	bool executed = q.exec(QString::fromStdString("SELECT " + name_key + ", " + cal_key + ", " + prot_key + ", " + carb_key
 		+ ", " + fat_key + ", " + size_key + " FROM " + foodtype_table_key
 		+ " WHERE NAME LIKE " + "'%" + name + "%'" + ";"));
-	if (!executed || q.size() < 0) return {};//throw new std::exception("Problem searching for name in SQL database");
+	if (!executed || q.size() < 0) return {};//throw new std::runtime_error("Problem searching for name in SQL database");
 
 	std::vector<FoodType> ret;
 	while (q.next()) {
@@ -233,7 +233,7 @@ std::vector<FoodType> SQLDatabase::all_foodtypes()
 	QSqlQuery q;
 	bool executed = q.exec(QString::fromStdString("SELECT " + name_key + ", " + cal_key + ", " + prot_key + ", " + carb_key + ", " + fat_key + ", " + size_key
 		+ " FROM " + foodtype_table_key + ";"));
-	if (!executed || q.size() <= 0) throw new std::exception("Could not find name in SQL database");
+	if (!executed || q.size() <= 0) throw new std::runtime_error("Could not find name in SQL database");
 
 	std::vector<FoodType> ret;
 	while (q.next()) {

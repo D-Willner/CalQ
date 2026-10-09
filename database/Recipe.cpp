@@ -68,16 +68,16 @@ QJsonObject Recipe::to_json() const
 Recipe Recipe::from_json(const QJsonObject& jo)
 {
 	if (!jo.contains("name") || !jo["name"].isString())
-		throw new std::exception("Recipe Json conversion invalid data");
+		throw new std::runtime_error("Recipe Json conversion invalid data");
 	std::string nm = jo["name"].toString().toStdString();
 
 	if (!jo.contains("ingredients") || !jo["ingredients"].isArray())
-		throw new std::exception("Recipe Json conversion invalid data");
+		throw new std::runtime_error("Recipe Json conversion invalid data");
 	std::vector<Food> ing;
 
 	for (const QJsonValue& val : jo["ingredients"].toArray()) {
 		if(!val.isObject())
-			throw new std::exception("Recipe Json conversion invalid data");
+			throw new std::runtime_error("Recipe Json conversion invalid data");
 		ing.push_back(Food::from_json(val.toObject()));
 	}
 

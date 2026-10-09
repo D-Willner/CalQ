@@ -1,5 +1,5 @@
 #pragma once
-#include "C:\Qt\6.11.1\msvc2022_64\include\QtWidgets\qdialog.h"
+#include "qdialog.h"
 #include "network/SQLDatabase.h"
 #include "database/Settings.h"
 

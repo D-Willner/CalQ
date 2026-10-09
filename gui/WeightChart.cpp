@@ -89,7 +89,7 @@ WeightChart::WeightChart(QWidget* parent) : WeightChart({},parent) {}
 
 void WeightChart::add(const std::vector<std::pair<QDate, BODYWEIGHT_T>>& v)
 {
-	//if (data == nullptr) throw new std::exception("WeightChart data not initialized");
+	//if (data == nullptr) throw new std::runtime_error("WeightChart data not initialized");
 
 	for (const std::pair<QDate, BODYWEIGHT_T>& p : v) {
 		add(p.second, p.first);

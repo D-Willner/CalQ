@@ -23,11 +23,11 @@ QJsonObject Exercise::to_json() const
 Exercise Exercise::from_json(const QJsonObject& jo)
 {
 	if (!jo.contains("type") || !jo["type"].isObject())
-		throw new std::exception("Exercise Json conversion invalid data");
+		throw new std::runtime_error("Exercise Json conversion invalid data");
 	ExerciseType et = ExerciseType::from_json(jo["type"].toObject());
 
 	if (!jo.contains("dur") || !jo["dur"].isDouble())
-		throw new std::exception("Exercise Json conversion invalid data");
+		throw new std::runtime_error("Exercise Json conversion invalid data");
 	TIME_T d = jo["dur"].toDouble();
 
 	return Exercise(et, d);

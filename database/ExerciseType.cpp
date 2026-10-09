@@ -21,10 +21,10 @@ QJsonObject ExerciseType::to_json() const
 ExerciseType ExerciseType::from_json(const QJsonObject& jo)
 {
 	if (!jo.contains("exercise_name") || !jo["exercise_name"].isString())
-		throw new std::exception("ExerciseType Json conversion invalid data");
+		throw new std::runtime_error("ExerciseType Json conversion invalid data");
 
 	if (!jo.contains("cals_per") || !jo["cals_per"].isDouble())
-		throw new std::exception("ExerciseType Json conversion invalid data");
+		throw new std::runtime_error("ExerciseType Json conversion invalid data");
 
 	return ExerciseType(jo["exercise_name"].toString().toStdString(), jo["cals_per"].toDouble());
 }

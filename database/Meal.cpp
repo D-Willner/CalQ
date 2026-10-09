@@ -31,11 +31,11 @@ QJsonObject Meal::to_json() const
 Meal Meal::from_json(const QJsonObject& jo)
 {
 	if (!jo.contains("food") || !jo["food"].isObject())
-		throw new std::exception("Meal Json conversion invalid data");
+		throw new std::runtime_error("Meal Json conversion invalid data");
 	Food f = Food::from_json(jo["food"].toObject());
 
 	if (!jo.contains("left") || !jo["left"].isDouble())
-		throw new std::exception("Meal Json conversion invalid data");
+		throw new std::runtime_error("Meal Json conversion invalid data");
 	int wt = jo["left"].toDouble();
 
 	return Meal(f, wt);

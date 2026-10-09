@@ -10,7 +10,7 @@ BODYWEIGHT_T WeightEntry::get_weight() { return bodyweight; }
 WeightEntry WeightEntry::from_json(const QJsonObject& jo)
 {
 	if (!jo.contains("bodyweight") || !jo["bodyweight"].isDouble())
-		throw new std::exception("Bodyweight Json read error");
+		throw new std::runtime_error("Bodyweight Json read error");
 
 	BODYWEIGHT_T w = jo["bodyweight"].toDouble();
 

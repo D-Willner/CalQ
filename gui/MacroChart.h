@@ -1,5 +1,5 @@
 #pragma once
-#include "C:\Qt\6.11.1\msvc2022_64\include\QtCharts\qchartview.h"
+#include "qchartview.h"
 #include <QBarSeries>
 #include <QBarSet>
 #include <QValueAxis>

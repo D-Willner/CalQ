@@ -56,11 +56,11 @@ QJsonObject Food::to_json() const
 Food Food::from_json(const QJsonObject& jo)
 {
 	if (!jo.contains("type") || !jo["type"].isObject())
-		throw new std::exception("Food Json conversion invalid data");
+		throw new std::runtime_error("Food Json conversion invalid data");
 	FoodType ft = FoodType::from_json(jo["type"].toObject());
 
 	if (!jo.contains("weight") || !jo["weight"].isDouble())
-		throw new std::exception("Food Json conversion invalid data");
+		throw new std::runtime_error("Food Json conversion invalid data");
 	int wt = jo["weight"].toDouble();
 
 	return Food(ft, wt);

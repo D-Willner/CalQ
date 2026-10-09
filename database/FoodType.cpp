@@ -41,32 +41,32 @@ FoodType FoodType::from_json(const QJsonObject& jo)
 	if (jo.contains("food_name") && jo["food_name"].isString())
 		f.food_name = jo["food_name"].toString().toStdString();
 	else
-		throw new std::exception("Wrong JSON read!");
+		throw new std::runtime_error("Wrong JSON read!");
 
 	if (jo.contains("cal_per") && jo["cal_per"].isDouble())
 		f.cal_per = jo["cal_per"].toDouble();
 	else
-		throw new std::exception("Wrong JSON read!");
+		throw new std::runtime_error("Wrong JSON read!");
 
 	if (jo.contains("prot_per") && jo["prot_per"].isDouble())
 		f.prot_per = jo["prot_per"].toDouble();
 	else
-		throw new std::exception("Wrong JSON read!");
+		throw new std::runtime_error("Wrong JSON read!");
 
 	if (jo.contains("carb_per") && jo["carb_per"].isDouble())
 		f.carb_per = jo["carb_per"].toDouble();
 	else
-		throw new std::exception("Wrong JSON read!");
+		throw new std::runtime_error("Wrong JSON read!");
 
 	if (jo.contains("fat_per") && jo["fat_per"].isDouble())
 		f.fat_per = jo["fat_per"].toDouble();
 	else
-		throw new std::exception("Wrong JSON read!");
+		throw new std::runtime_error("Wrong JSON read!");
 
 	if (jo.contains("standard_size") && jo["standard_size"].isDouble())
 		f.standard_size = jo["standard_size"].toDouble();
 	else
-		throw new std::exception("Wrong JSON read!");
+		throw new std::runtime_error("Wrong JSON read!");
 
 	return f;
 }

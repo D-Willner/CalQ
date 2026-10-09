@@ -104,11 +104,11 @@ void Client::models_received()
 	reply = nullptr;
 
 	if (doc.isEmpty()) return;	//	No connection possible
-	if (!doc.isObject()) throw new std::exception("Wrong Json format when reading models");
+	if (!doc.isObject()) throw new std::runtime_error("Wrong Json format when reading models");
 	QJsonObject jo = doc.object();
 
 	std::vector<std::pair<std::string,std::string>> model_vec;
-	if(!jo.contains("models") || !jo["models"].isArray()) throw new std::exception("Wrong Json format when reading models");
+	if(!jo.contains("models") || !jo["models"].isArray()) throw new std::runtime_error("Wrong Json format when reading models");
 	for (const QJsonValue& val : jo["models"].toArray()) {
 		if (!val.isObject()) continue;
 		QJsonObject model = val.toObject();
@@ -140,10 +140,10 @@ void Client::food_data_received()
 	reply->deleteLater();
 	reply = nullptr;
 
-	if (!doc.isObject()) throw new std::exception("Wrong Json format when reading food data");
+	if (!doc.isObject()) throw new std::runtime_error("Wrong Json format when reading food data");
 	QJsonObject jo = doc.object();
 
-	if(!jo.contains("output") || !jo["output"].isArray()) throw new std::exception("Wrong Json format when reading food data");
+	if(!jo.contains("output") || !jo["output"].isArray()) throw new std::runtime_error("Wrong Json format when reading food data");
 
 	QString response = "Error";
 	for (const QJsonValue& val : jo["output"].toArray()) {
@@ -159,7 +159,7 @@ void Client::food_data_received()
 
 
 	QFile file("food.txt");
-	if (!file.open(QFile::WriteOnly)) throw new std::exception("Could not open file");
+	if (!file.open(QFile::WriteOnly)) throw new std::runtime_error("Could not open file");
 	file.write(response.toUtf8());
 
 	QJsonDocument food_doc = QJsonDocument::fromJson(response.toUtf8());
@@ -201,7 +201,7 @@ void Client::send_request(const QString& qs)
 
 	QJsonDocument data(jo);
 
-	if (reply) throw new std::exception("Two concurrent requests");
+	if (reply) throw new std::runtime_error("Two concurrent requests");
 	reply = post(req, data.toJson());
 	//reply = get(req);
 
@@ -213,7 +213,7 @@ void Client::reply_received()
 	if (!reply) return;
 
 	QFile file("reply.txt");
-	if (!file.open(QFile::WriteOnly)) throw new std::exception("Could not open file");
+	if (!file.open(QFile::WriteOnly)) throw new std::runtime_error("Could not open file");
 	auto reply_data = reply->readAll();
 	file.write(reply_data);
 	reply->close();

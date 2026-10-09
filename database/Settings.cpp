@@ -61,7 +61,7 @@ Settings Settings::from_json(const QJsonObject& jo)
 bool Settings::save() const
 {
 	QFile file("resources/settings.json");
-	if (!file.open(QFile::WriteOnly)) throw new std::exception("Could not open settings file");
+	if (!file.open(QFile::WriteOnly)) throw new std::runtime_error("Could not open settings file");
 
 	QJsonObject jo = to_json();
 	QJsonDocument doc(jo);
@@ -81,12 +81,12 @@ Settings Settings::load()
 	if (!file.exists()) res = file.open(QFile::ReadWrite);
 	else res = file.open(QFile::ReadOnly);
 
-	if (!res) throw new std::exception("Could not open settings file");
+	if (!res) throw new std::runtime_error("Could not open settings file");
 
 	QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
 	if (doc.isEmpty() || doc.isNull()) return Settings::from_json(QJsonObject());
 
-	if (!doc.isObject()) throw new std::exception("Unexpected Json format");
+	if (!doc.isObject()) throw new std::runtime_error("Unexpected Json format");
 	QJsonObject jo = doc.object();
 
 	return Settings::from_json(jo);
