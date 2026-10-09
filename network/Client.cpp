@@ -57,9 +57,11 @@ bool Client::request_models()
 	QString u = QString::fromStdString(url());
 	QNetworkRequest req(QUrl(QString::fromStdString(url() + "/api/v1/models")));
 	//req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+#if QT_VERSION >= QT_VERSION_CHECK(6, 11, 0)
 	req.setTcpKeepAliveIdleTimeBeforeProbes(20s);
 	req.setTcpKeepAliveIntervalBetweenProbes(2s);
 	req.setTcpKeepAliveProbeCount(5);
+#endif
 
 	reply = get(req);
 
@@ -75,9 +77,11 @@ bool Client::request_food_data(const std::string& name)
 
 	QNetworkRequest req(QUrl(QString::fromStdString(url() + "/api/v1/chat")));
 	req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+#if QT_VERSION >= QT_VERSION_CHECK(6, 11, 0)
 	req.setTcpKeepAliveIdleTimeBeforeProbes(20s);
 	req.setTcpKeepAliveIntervalBetweenProbes(2s);
 	req.setTcpKeepAliveProbeCount(5);
+#endif
 
 	QJsonObject jo;
 	jo["model"] = QString::fromStdString(model_name);
@@ -190,9 +194,11 @@ void Client::send_request(const QString& qs)
 {
 	QNetworkRequest req(QUrl(QString::fromStdString(url() + "/api/v1/chat")));
 	req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+#if QT_VERSION >= QT_VERSION_CHECK(6, 11, 0)
 	req.setTcpKeepAliveIdleTimeBeforeProbes(20s);
 	req.setTcpKeepAliveIntervalBetweenProbes(2s);
 	req.setTcpKeepAliveProbeCount(5);
+#endif
 
 	QJsonObject jo;
 	jo["model"] = QString::fromStdString(model_name);
