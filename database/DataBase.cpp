@@ -60,7 +60,7 @@ template<typename T>
 std::vector<std::pair<QDate, std::vector<T>>> DataBase::T_range(QDate beg, QDate end, const std::map<QDate, std::vector<T>>& m)
 {
     std::vector<std::pair<QDate, std::vector<T>>> ret;
-    for (QDate it = beg; it <= end; it++) {
+    for (QDate it = beg; it <= end; it = it.addDays(1)) {
         if (m.count(it) == 0) {
             ret.push_back({ it,std::vector<T>() });
         }
@@ -82,7 +82,7 @@ std::vector<std::pair<QDate, std::vector<Exercise>>> DataBase::exercise_range(QD
 std::vector<std::pair<QDate, BODYWEIGHT_T>> DataBase::weights_range(QDate beg, QDate end)
 {
     std::vector<std::pair<QDate, BODYWEIGHT_T>> ret;
-    for (QDate it = beg; it <= end; it++){
+    for (QDate it = beg; it <= end; it = it.addDays(1)){
         BODYWEIGHT_T w = weight_on(it);
         if (w >= 0) ret.push_back({ it, w });
     }
