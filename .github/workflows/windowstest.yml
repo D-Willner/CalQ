@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Windows build
+    runs-on: windows-2022
+    timeout-minutes: 30
+
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      - name: Install Qt and MinGW
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.11.1'
+          arch: win64_mingw
+          modules: qtcharts
+          tools: 'tools_mingw1310,qt.tools.win64_mingw1310'
+          cache: true
+
+      - name: Configure
+        run: >
+          cmake -S . -B build/ci -G Ninja
+          -DCMAKE_BUILD_TYPE=Release
+          "-DCMAKE_PREFIX_PATH=$env:QT_ROOT_DIR"
+          "-DCMAKE_CXX_COMPILER=$env:IQTA_TOOLS/mingw1310_64/bin/g++.exe"
+
+      - name: Build
+        run: cmake --build build/ci --parallel 2
