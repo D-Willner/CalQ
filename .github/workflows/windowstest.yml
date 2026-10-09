@@ -25,7 +25,9 @@ jobs:
       - name: Install Qt and MinGW
         uses: jurplel/install-qt-action@v4
         with:
-          version: '6.11.1'
+          # aqtinstall 3.3.0 does not support the Qt 6.11 repository layout.
+          # https://github.com/miurahr/aqtinstall/issues/1007
+          version: '6.10.3'
           arch: win64_mingw
           modules: qtcharts
           tools: 'tools_mingw1310,qt.tools.win64_mingw1310'
